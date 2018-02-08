@@ -1,0 +1,11 @@
+{
+    "id": "{C3A2051E-6390-4041-867F-B70F8EA06BE5}",
+    "name": "PS4_Dummy",
+    "type": 2,
+    "vendor": "Kai Schnittcher",
+    "aliases":["PS4 Dummy"],
+    "parentRequirements": ["{C8792760-65CF-4C53-B5C7-A30FCC84FEFE}"],
+    "childRequirements": [],
+    "implemented": ["{7A1272A4-CBDB-46EF-BFC6-DCF4A53D2FC7}"],
+    "prefix": "PS4D"
+}

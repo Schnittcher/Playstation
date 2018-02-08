@@ -1,0 +1,13 @@
+{
+    "id": "{F5494047-E267-42BC-9848-2B4F539D9C41}",
+    "author": "Kai Schnittcher",
+    "name": "IPS-PS4",
+    "url": "www.schnittcher.info",
+    "compatibility": {
+        "version": "4.3",
+        "date": 1498241677
+    },
+    "version": "2.0",
+    "build": 0,
+    "date": 1498241677
+}
