@@ -26,7 +26,7 @@ class PS4 extends IPSModule {
         $ReceiveData = json_decode($JSONString);
         $this->SendDebug("Receive JSONString", $JSONString, 0);
         //$this->SendDebug("Receive", $ReceiveData, 0);
-        $Packet = $this->Buffer . utf8_decode($ReceiveData->Buffer);
+        $Packet = utf8_decode($ReceiveData->Buffer);
 
         //Empfangenes Paket parsen, hier habe ich mit unserem Request nur das zerschneiden des Paketes geübt :)
 
@@ -34,21 +34,21 @@ class PS4 extends IPSModule {
         $Type = substr($Packet,4,4);
         $Payload = substr($Packet,8);
 
-        $Seed = substr($Payload,12,16);
         switch ($Type)
         {
             case "pcco": // oder "\x70\x63\x63\x6f" => Ist Hello Request
                 // War nur zum testen, weil wir ja unseren Request nicht verarbeiten wollen, sondern die Antwort
                 $this->SendDebug("Hello Request Answer", $Type, 0);
-                $this->SendDebug("Seed", $Seed, 0);
+
                 $Seed = substr($Payload,12,16);
+                $this->SendDebug("Seed", $Seed, 0);
+                $this->SendDebug("Seed Length", strlen($Seed), 0);
                 $this->SetBuffer("Seed", $Seed);
 
                 break;
             default: // Hello Response, leider nicht dokumentiert. Das pyhton Script prüft auch die Empfangen Daten gar nicht, es schneidet nur den Seed raus.
                 // Wenn das reicht, dann braucht man das hier alles nicht :)
-                $Seed = substr($Payload,12,16);
-                $this->SendDebug("Seed default", $Seed, 0);
+                //$this->SendDebug("Seed default", $Seed, 0);
                 break;
         }
     }
@@ -56,10 +56,12 @@ class PS4 extends IPSModule {
     public function connect() {
         $random_seed = "\x10\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
         $this->_send_hello_request();
+
+
         sleep(1);
         $seed = $this->GetBuffer("Seed");
         $this->SendDebug("Connect Seed", $seed, 0);
-        str_pad($seed, 16,"\x00");
+        //str_pad($seed, 16,"\x00");
         $this->_send_handshake_request($this->GetBuffer("Seed"));
     }
 
@@ -92,15 +94,15 @@ class PS4 extends IPSModule {
 
     public function _send_login_request(){
         $AccountID = "604c5af28fb48436a6c05ba6ffa9471ef632be4c4323b248f54e6a8ca88ebe8b";
-        str_pad($AccountID, 64, "\x00");
+        $AccountID = str_pad($AccountID, 64, "\x00");
         $AppLabel ="Playstation";
-        str_pad($AppLabel, 256,"\x00");
+        $AppLabel = str_pad($AppLabel, 256,"\x00");
         $OSVersion = "4.4";
-        str_pad($OSVersion, 16,"\x00");
+        $OSVersion = str_pad($OSVersion, 16,"\x00");
         $model ="PS4 Waker";
-        str_pad($model, 16,"\x00");
+        $model = str_pad($model, 16,"\x00");
         $pincode = "";
-        str_pad($pincode, 16,"\x00");
+        $pincode = str_pad($pincode, 16,"\x00");
 
         $Login = "\x80\x01\x00\x00";
         $Login .= "\x1e\x00\x00\x00";
@@ -111,6 +113,8 @@ class PS4 extends IPSModule {
         $Login .= $OSVersion;
         $Login .= $model;
         $Login .= $pincode;
+
+        $this->SendDebug("Login Package", $Login, 0);
 
         $this->_send_msg($Login,true);
 
