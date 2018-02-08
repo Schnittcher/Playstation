@@ -93,7 +93,7 @@ class PS4 extends IPSModule {
     }
 
     public function _send_login_request(){
-        $AccountID = "604c5af28fb48436a6c05ba6ffa9471ef632be4c4323b248f54e6a8ca88ebe8b";
+        $AccountID = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
         $AccountID = str_pad($AccountID, 64, "\x00");
         $AppLabel ="Playstation";
         $AppLabel = str_pad($AppLabel, 256,"\x00");
