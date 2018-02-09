@@ -24,9 +24,8 @@ class PS4 extends IPSModule {
     public function ReceiveData($JSONString)
     {
         $ReceiveData = json_decode($JSONString);
-        $this->SendDebug("Receive JSONString", $JSONString, 0);
-        //$this->SendDebug("Receive", $ReceiveData, 0);
         $Packet = utf8_decode($ReceiveData->Buffer);
+        $this->SendDebug("Received Data", $Packet, 0);
 
         //Empfangenes Paket parsen, hier habe ich mit unserem Request nur das zerschneiden des Paketes geübt :)
 
@@ -40,15 +39,14 @@ class PS4 extends IPSModule {
                 // War nur zum testen, weil wir ja unseren Request nicht verarbeiten wollen, sondern die Antwort
                 $this->SendDebug("Hello Request Answer", $Type, 0);
 
-                $Seed = substr($Payload,12,16);
+                $Seed = substr($Packet,20,16)  ;
                 $this->SendDebug("Seed", $Seed, 0);
-                $this->SendDebug("Seed Length", strlen($Seed), 0);
                 $this->SetBuffer("Seed", $Seed);
 
                 break;
             default: // Hello Response, leider nicht dokumentiert. Das pyhton Script prüft auch die Empfangen Daten gar nicht, es schneidet nur den Seed raus.
                 // Wenn das reicht, dann braucht man das hier alles nicht :)
-                //$this->SendDebug("Seed default", $Seed, 0);
+                //$this->SendDebug("Seed default", $Seed, 0)
                 break;
         }
     }
@@ -57,11 +55,9 @@ class PS4 extends IPSModule {
         $random_seed = "\x10\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
         $this->_send_hello_request();
 
-
-        sleep(1);
+        sleep(2);
         $seed = $this->GetBuffer("Seed");
         $this->SendDebug("Connect Seed", $seed, 0);
-        //str_pad($seed, 16,"\x00");
         $this->_send_handshake_request($this->GetBuffer("Seed"));
     }
 
@@ -85,10 +81,11 @@ class PS4 extends IPSModule {
 
     public function _send_standby_request() {
         $Packet = "\x08\x00\x00\x00";
-        $Packet .= "\x08\x00\x00\x00";
+        $Packet .= "\x1a\x00\x00\x00";
         $dummy = "";
-        str_pad($dummy, 8);
+        $dummy = str_pad($dummy, 8,"\x00");
         $Packet .= $dummy;
+
         $this->_send_msg($Packet,true);
     }
 
@@ -113,31 +110,34 @@ class PS4 extends IPSModule {
         $Login .= $OSVersion;
         $Login .= $model;
         $Login .= $pincode;
-
         $this->SendDebug("Login Package", $Login, 0);
 
         $this->_send_msg($Login,true);
+    }
 
+    public function _send_boot_request($title_id) {
+        $Package ="\x18\x00\x00\x00";
+        $Package .= "\x0a\x00\x00\x00";
+        $title_id = str_pad($title_id,16,"\x00");
+        $Package .= $title_id;
+        $dummy = "";
+        $dummy = str_pad($dummy, 8,"\x00");
+        $Package .= $dummy;
 
+        $this->_send_msg($Package,true);
     }
 
     private function _send_msg($msg, $encrypted=false) {
-        $this->SendDebug("TX MSG Length:", strlen($msg), 0);
         $this->SendDebug("TX MSG:", $msg, 0); //evtl. bin2hex($msg)
 
         if ($encrypted) {
             $random_seed = "\x10\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
-            $cipher = "AES-128-CBC";
+            $cipher ="aes-128-cbc";
             $iv = $this->GetBuffer("Seed");
-            str_pad($iv, 16,"\x00");
             $this->SendDebug("IV:", $iv, 0); //evtl. bin2hex($msg)
             $msg = openssl_encrypt($msg, $cipher,$random_seed, $options=0, $iv);
-
-
+            $this->SendDebug("TX MSG crypted:", $msg, 0);
         }
-        $this->SendDebug("TX MSG crypted Length:", strlen($msg), 0);
-        $this->SendDebug("TX MSG crypted:", $msg, 0);
-
 
         $JSON['DataID'] = '{79827379-F36E-4ADA-8A95-5F8D1DC92FA9}';
         $JSON['Buffer'] = utf8_encode($msg);
