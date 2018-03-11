@@ -1,7 +1,7 @@
 {
     "id": "{D4AF1A75-D35E-4592-944D-67736220182E}",
     "name": "PS4",
-    "type": 2,
+    "type": 3,
     "vendor": "Kai Schnittcher",
     "aliases":["PS4"],
     "parentRequirements": ["{79827379-F36E-4ADA-8A95-5F8D1DC92FA9}"],

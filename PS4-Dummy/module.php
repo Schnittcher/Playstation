@@ -13,6 +13,7 @@ class PS4_Dummy extends IPSModule {
         parent::Create();
         //Always create our own MultiCast I/O, when no parent is already available
         $this->RequireParent("{BAB408E0-0A0F-48C3-B14E-9FB2FA81F66A}");
+        $this->RegisterVariableString("PS4_Credentials","Credentials");
 
     }
 
@@ -26,11 +27,9 @@ class PS4_Dummy extends IPSModule {
         $Header[] = "HTTP/1.1 620 Server Standby";
         $Header[] = "host-id:1234567890AB";
         $Header[] = "host-type:PS4";
-        $Header[] = "host-name:PS4-Symcon";
+        $Header[] = "host-name:IP-Symcon";
         $Header[] = "host-request-port:997";
         $Header[] = "device-discovery-protocol-version:00020020";
-        //$Header[] = "";
-        //$Header[] = "";
         $Payload = implode("\n", $Header);
         $this->SendDebug("SendSearchResponse", $Payload, 0);
         $SendData = Array("DataID" => "{C8792760-65CF-4C53-B5C7-A30FCC84FEFE}", "Buffer" => utf8_encode($Payload), "ClientIP" => $Host, "ClientPort" => $Port);
@@ -50,7 +49,6 @@ class PS4_Dummy extends IPSModule {
         return $Header;
     }
 
-
     public function ReceiveData($JSONString)
     {
         $ReceiveData = json_decode($JSONString);
@@ -59,23 +57,32 @@ class PS4_Dummy extends IPSModule {
         $data = $this->Buffer . utf8_decode($ReceiveData->Buffer);
 
         $Lines = explode("\n", utf8_decode($ReceiveData->Buffer));
-        $this->SendDebug("Receive Lines", $Lines, 0);
-        // die letzten zwei wech.
-        //array_pop($Lines);
-        //array_pop($Lines);
+        //$this->SendDebug("Receive Lines", $Lines, 0);
 
         $Request = array_shift($Lines);
         $Header = $this->ParseHeader($Lines);
         // Auf verschiedene Requests prüfen.
         switch ($Request) // REQUEST
         {
-            case "SRCH * HTTP/1.1":
+            case "HTTP/1.1 200 Ok":
                 // hier Sucht ein Gerät.
                 // Sucht es nach uns ?
                 $this->SendDebug("Receive REQUEST", $Request, 0);
                 $this->SendDebug("Receive HEADER", $Header, 0);
                 $this->SendSearchResponse($ReceiveData->ClientIP, $ReceiveData->ClientPort);
                 return;
+                break;
+            case "SRCH * HTTP/1.1":
+                $this->SendDebug("Receive REQUEST", $Request, 0);
+                $this->SendDebug("Receive HEADER", $Header, 0);
+                $this->SendSearchResponse($ReceiveData->ClientIP, $ReceiveData->ClientPort);
+                break;
+            case "WAKEUP * HTTP/1.1":
+                if (array_key_exists(1,$Lines)) {
+                    $credentials = explode(":", $Lines[1]);
+                    $this->SendDebug("Credentials", $credentials[1],0);
+                    SetValue(IPS_GetObjectIDByIdent("PS4_Credentials",$this->InstanceID), $credentials[1]);
+                }
                 break;
             default:
                 // Alles andere wollen wir nicht

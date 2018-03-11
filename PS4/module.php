@@ -1,11 +1,19 @@
 <?
+
 include_once(__DIR__ . "/../libs/helper.php");
 
-class PS4 extends IPSModule {
+/**
+ * @property bool $ReceiveEncrypted
+ * @property string $Buffer
+ * @property string $Seed
+ */
+class PS4 extends IPSModule
+{
 
     use BufferHelper,
-        DebugHelper;
-
+        DebugHelper,
+        TCPConnection,
+        DDPConnection;
 
     public function Create()
     {
@@ -14,150 +22,228 @@ class PS4 extends IPSModule {
         //Always create our own Client Socket I/O, when no parent is already available
         $this->RequireParent("{3CFF0FD9-E306-41DB-9B5A-9D06D38576C3}");
 
+        //Register Propertys
+        $this->RegisterPropertyString("IP", "");
+        $this->RegisterPropertyString("Credentials", "");
+        $this->RegisterPropertyString("Games", "");
+        $this->RegisterTimer("PS4_UpdateActuallyStatus", 5000, "PS4_UpdateActuallyStatus($this->InstanceID);");
+
+        //Register Variablen
+        $this->RegisterVariableBoolean("PS4_Power", "Status", "~Switch");
+        $this->RegisterVariableString("PS4_Cover","Cover", "~HTMLBox");
     }
 
     public function ApplyChanges()
     {
+        $this->Buffer = "";
+        $this->Seed = "";
+        $this->ReceiveEncrypted = false;
 
+        if(!IPS_VariableProfileExists("PS4.Games"))
+            $this->RegisterProfileIntegerEx("PS4.Games", "Database", "", "", Array());
+        $this->RegisterVariableInteger("PS4_Game", "Games", "PS4.Games");
+        $this->EnableAction("PS4_Game");
+        $this->EnableAction("PS4_Power");
+        $this->UpdateGamelist();
+        $this->SetTimerInterval("PS4_UpdateActuallyStatus",20000);
     }
 
     public function ReceiveData($JSONString)
     {
         $ReceiveData = json_decode($JSONString);
-        $Packet = utf8_decode($ReceiveData->Buffer);
-        $this->SendDebug("Received Data", $Packet, 0);
-
-        //Empfangenes Paket parsen, hier habe ich mit unserem Request nur das zerschneiden des Paketes geübt :)
-
-        $Len = unpack('V',substr($Packet,0,4));
-        $Type = substr($Packet,4,4);
-        $Payload = substr($Packet,8);
-
-        switch ($Type)
-        {
-            case "pcco": // oder "\x70\x63\x63\x6f" => Ist Hello Request
-                // War nur zum testen, weil wir ja unseren Request nicht verarbeiten wollen, sondern die Antwort
-                $this->SendDebug("Hello Request Answer", $Type, 0);
-
-                $Seed = substr($Packet,20,16)  ;
-                $this->SendDebug("Seed", $Seed, 0);
-                $this->SetBuffer("Seed", $Seed);
-
-                break;
-            default: // Hello Response, leider nicht dokumentiert. Das pyhton Script prüft auch die Empfangen Daten gar nicht, es schneidet nur den Seed raus.
-                // Wenn das reicht, dann braucht man das hier alles nicht :)
-                //$this->SendDebug("Seed default", $Seed, 0)
-                break;
-        }
-    }
-
-    public function connect() {
-        $random_seed = "\x10\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
-        $this->_send_hello_request();
-
-        sleep(2);
-        $seed = $this->GetBuffer("Seed");
-        $this->SendDebug("Connect Seed", $seed, 0);
-        $this->_send_handshake_request($this->GetBuffer("Seed"));
-    }
-
-    public function _send_hello_request() {
-        $packet = "\x1c\x00\x00\x00\x70\x63\x63\x6f\x00\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
-        $this->_send_msg($packet);
-    }
-
-    public function _send_handshake_request($seed){
-
-        $random_seed = "\x10\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
-        openssl_public_encrypt($random_seed,$cryptedKey,$this->get_Public_Key_RSA(),OPENSSL_PKCS1_OAEP_PADDING);
-
-        $Packet = "\x18\x01\x00\x00";
-        $Packet .= "\x20\x00\x00\x00";
-        $Packet .= $cryptedKey;
-        $Packet .= $seed;
-
-        $this->_send_msg($Packet);
-    }
-
-    public function _send_standby_request() {
-        $Packet = "\x08\x00\x00\x00";
-        $Packet .= "\x1a\x00\x00\x00";
-        $dummy = "";
-        $dummy = str_pad($dummy, 8,"\x00");
-        $Packet .= $dummy;
-
-        $this->_send_msg($Packet,true);
-    }
-
-    public function _send_login_request(){
-        $AccountID = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
-        $AccountID = str_pad($AccountID, 64, "\x00");
-        $AppLabel ="Playstation";
-        $AppLabel = str_pad($AppLabel, 256,"\x00");
-        $OSVersion = "4.4";
-        $OSVersion = str_pad($OSVersion, 16,"\x00");
-        $model ="PS4 Waker";
-        $model = str_pad($model, 16,"\x00");
-        $pincode = "";
-        $pincode = str_pad($pincode, 16,"\x00");
-
-        $Login = "\x80\x01\x00\x00";
-        $Login .= "\x1e\x00\x00\x00";
-        $Login .= "\x00\x00\x00\x00";
-        $Login .="\x01\x02\x00\x00";
-        $Login .= $AccountID;
-        $Login .= $AppLabel;
-        $Login .= $OSVersion;
-        $Login .= $model;
-        $Login .= $pincode;
-        $this->SendDebug("Login Package", $Login, 0);
-
-        $this->_send_msg($Login,true);
-    }
-
-    public function _send_boot_request($title_id) {
-        $Package ="\x18\x00\x00\x00";
-        $Package .= "\x0a\x00\x00\x00";
-        $title_id = str_pad($title_id,16,"\x00");
-        $Package .= $title_id;
-        $dummy = "";
-        $dummy = str_pad($dummy, 8,"\x00");
-        $Package .= $dummy;
-
-        $this->_send_msg($Package,true);
-    }
-
-    private function _send_msg($msg, $encrypted=false) {
-        $this->SendDebug("TX MSG:", $msg, 0); //evtl. bin2hex($msg)
-
-        if ($encrypted) {
+        $DataIn = utf8_decode($ReceiveData->Buffer);
+        if ($this->ReceiveEncrypted) { // Hier empfangende Daten entschlüsseln
+            $this->SendDebug("Received Encrypted Data", $DataIn, 1); // 1 für default ist Hex-Ansicht
             $random_seed = "\x10\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
-            $cipher ="aes-128-cbc";
-            $iv = $this->GetBuffer("Seed");
-            $this->SendDebug("IV:", $iv, 0); //evtl. bin2hex($msg)
-            $msg = openssl_encrypt($msg, $cipher,$random_seed, $options=0, $iv);
-            $this->SendDebug("TX MSG crypted:", $msg, 0);
+            $Data = openssl_decrypt($DataIn, "AES-128-CBC", $random_seed, OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING, $this->Seed); //Decrypt benutzt unser Passwort (random_seed) und als start IV den empfangenen Seed des PS4
+            $this->SendDebug("Received Decrypted Data", $Data, 0); // 1 für default ist Hex-Ansicht
+        } else { // Unverschlüsselte Daten.
+            $this->SendDebug("Received Plain Data", $DataIn, 1); // 1 für default ist Hex-Ansicht
+            $Data = $this->Buffer . $DataIn;
+            $Len = unpack('V', substr($Data, 0, 4))[1];
+            //$Data lang genug ?
+            if ($Len > strlen($Data)) { // Nein zu kurz, ab in den Buffer.
+                $this->Buffer = $Data;
+                return;
+            }
+            $this->Buffer = substr($Data, $Len); // Rest in den Buffer
+            //Empfangenes Paket parsen
+            $Packet = substr($Data, 4, $Len);
+            $Type = substr($Packet, 0, 4);
+            $Payload = substr($Packet, 4);
+
+            switch ($Type) {
+                case "pcco":
+                    $this->SendDebug("Hello Request Answer", $Payload, 1);
+                    $this->Seed = substr($Payload, 12, 16);
+                    $this->SendDebug("Seed received", substr($Payload, 12, 16), 1);
+                    break;
+                default:
+                    $this->SendDebug("unhandled type received", $Type, 0);
+                    $this->SendDebug("unhandled payload received", $Payload, 0);
+                    break;
+            }
+        }
+    }
+
+    /** Public Functions to control PS4-System */
+
+    public function Register($pincode)
+    {
+        $this->Connect();
+        IPS_Sleep(10);
+        $this->_send_login_request($pincode);
+        IPS_Sleep(500);
+        $this->Close();
+    }
+
+    public function Login()
+    {
+        $this->Connect();
+        IPS_Sleep(10);
+        $this->_send_login_request();
+        IPS_Sleep(500);
+        $this->Close();
+    }
+
+    public function Standby()
+    {
+        $this->Connect();
+        IPS_Sleep(100);
+        $this->_send_login_request();
+        IPS_Sleep(20);
+        $this->_send_standby_request();
+        $this->Close();
+    }
+
+    public function StartTitle($title_id)
+    {
+        $this->Connect();
+        IPS_Sleep(100);
+        $this->_send_login_request();
+        $this->_send_boot_request($title_id);
+        $this->Close();
+    }
+
+    public function UpdateActuallyStatus() {
+        $PS4Status = $this->getStatus();
+
+        //Actually PS4 Power Status
+        if ($PS4Status["Power"]) {
+            SetValue(IPS_GetObjectIDByIdent("PS4_Power",$this->InstanceID), true);
+
+            //Actually Game
+            if (array_key_exists("RUNNING-APP-TITLEID",$PS4Status)) {
+            $GamesListString = $this->ReadPropertyString("Games");
+                if ($GamesListString != "") {
+                    $Games = json_decode($GamesListString);
+                    foreach($Games as $key=>$Game) {
+                        if ($Game->GameID == $PS4Status["RUNNING-APP-TITLEID"]) {
+                            SetValue(IPS_GetObjectIDByIdent("PS4_Game",$this->InstanceID), $key+1);
+                            $CoverURL = $this->getCover($Game->GameID);
+                            $CoverString ="<div align=\"right\">
+<img src=$CoverURL>
+</div>";
+                            SetValue(IPS_GetObjectIDByIdent("PS4_Cover",$this->InstanceID), $CoverString);
+                        }
+                    }
+                }
+            } else {
+                SetValue(IPS_GetObjectIDByIdent("PS4_Game",$this->InstanceID), 0);
+            }
+        } else {
+            SetValue(IPS_GetObjectIDByIdent("PS4_Power",$this->InstanceID), false);
+        }
+    }
+
+
+    /** internal private Functions */
+
+    //IPS Functions
+
+    private function UpdateGamelist()
+    {
+        $GamesListString = $this->ReadPropertyString("Games");
+            If ($GamesListString != "") {
+            if (IPS_VariableProfileExists("PS4.Games"))
+                IPS_DeleteVariableProfile("PS4.Games");
+
+            $Associations = Array();
+            $Value = 1;
+
+            $Games = json_decode($GamesListString);
+            foreach ($Games as $Game) {
+                $Associations[] = Array($Value++, $Game->GameName, "", -1);
+                // associations only support up to 32 variables
+                if( $Value === 33 ) break;
+            }
+            $this->RegisterProfileIntegerEx("PS4.Games", "Database", "", "", $Associations);
+        }
+    }
+
+    private function getCover($title_id) {
+        $cover = file_get_contents(__DIR__ . "/../libs/cover.json");
+        $cover_data = json_decode($cover,true);
+        IPS_LogMessage("Cover","test");
+        if (array_key_exists($title_id,$cover_data)) {
+            return $cover_data[$title_id];
+        }
+        return false;
+    }
+
+    /** IPS Functions */
+
+    public function RequestAction($Ident, $Value) {
+        switch($Ident) {
+            case "PS4_Game":
+                $GamesListString = $this->ReadPropertyString("Games");
+                $Games = json_decode($GamesListString);
+                $Game = $Games[$Value-1];
+                $this->StartTitle($Game->GameID);
+                break;
+            case "PS4_Power":
+                If ($Value) {
+                    $this->Login();
+                    SetValue(IPS_GetObjectIDByIdent($Ident,$this->InstanceID), true);
+                } else {
+                    $this->Standby();
+                    SetValue(IPS_GetObjectIDByIdent($Ident,$this->InstanceID), false);
+                }
+                break;
+        }
+    }
+
+    protected function RegisterProfileInteger($Name, $Icon, $Prefix, $Suffix, $MinValue, $MaxValue, $StepSize) {
+
+        if(!IPS_VariableProfileExists($Name)) {
+            IPS_CreateVariableProfile($Name, 1);
+        } else {
+            $profile = IPS_GetVariableProfile($Name);
+            if($profile['ProfileType'] != 1)
+                throw new Exception("Variable profile type does not match for profile ".$Name);
         }
 
-        $JSON['DataID'] = '{79827379-F36E-4ADA-8A95-5F8D1DC92FA9}';
-        $JSON['Buffer'] = utf8_encode($msg);
-        $SendData = json_encode($JSON);
-        //Send Data to Client Socket
-        $this->SendDataToParent($SendData);
+        IPS_SetVariableProfileIcon($Name, $Icon);
+        IPS_SetVariableProfileText($Name, $Prefix, $Suffix);
+        IPS_SetVariableProfileValues($Name, $MinValue, $MaxValue, $StepSize);
+
     }
 
-    private function get_Public_Key_RSA() {
-        $pk = <<<EOF
------BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxfAO/MDk5ovZpp7xlG9J
-JKc4Sg4ztAz+BbOt6Gbhub02tF9bryklpTIyzM0v817pwQ3TCoigpxEcWdTykhDL
-cGhAbcp6E7Xh8aHEsqgtQ/c+wY1zIl3fU//uddlB1XuipXthDv6emXsyyU/tJWqc
-zy9HCJncLJeYo7MJvf2TE9nnlVm1x4flmD0k1zrvb3MONqoZbKb/TQVuVhBv7SM+
-U5PSi3diXIx1Nnj4vQ8clRNUJ5X1tT9XfVmKQS1J513XNZ0uYHYRDzQYujpLWucu
-ob7v50wCpUm3iKP1fYCixMP6xFm0jPYz1YQaMV35VkYwc40qgk3av0PDS+1G0dCm
-swIDAQAB
------END PUBLIC KEY-----
-EOF;
-        return $pk;
+    protected function RegisterProfileIntegerEx($Name, $Icon, $Prefix, $Suffix, $Associations) {
+        if ( sizeof($Associations) === 0 ){
+            $MinValue = 0;
+            $MaxValue = 0;
+        } else {
+            $MinValue = $Associations[0][0];
+            $MaxValue = $Associations[sizeof($Associations)-1][0];
+        }
+
+        $this->RegisterProfileInteger($Name, $Icon, $Prefix, $Suffix, $MinValue, $MaxValue, 0);
+
+        foreach($Associations as $Association) {
+            IPS_SetVariableProfileAssociation($Name, $Association[0], $Association[1], $Association[2], $Association[3]);
+        }
+
     }
+
 }

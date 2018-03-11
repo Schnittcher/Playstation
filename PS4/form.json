@@ -4,8 +4,39 @@
                 {
                     "type": "Label",
                     "label": "Sie müssen die lokale IP-Adresse im IO konfigurieren."
+                },
+                { "type": "ValidationTextBox", "name": "IP", "caption": "IP Adresse des PS4-Systems" },
+                { "type": "ValidationTextBox", "name": "Credentials", "caption": "User-Credentials" },
+                {
+                    "type": "List",
+                    "name": "Games",
+                    "rowCount": 15,
+                    "add": true,
+                    "delete": true,
+                    "sort": {
+                        "column": "Index",
+                        "direction": "ascending"
+                    },
+                    "columns": [{
+                        "label": "Game ID",
+                        "name": "GameID",
+                        "width": "100px",
+                        "add": 1,
+                        "edit": {
+                            "type": "ValidationTextBox"
+                        }
+                    }, {
+                        "label": "Game Name",
+                        "name": "GameName",
+                        "width": "200px",
+                        "add": 1,
+                        "edit": {
+                            "type": "ValidationTextBox"
+                        }
+                    }
+                    ],
+                    "values": []
                 }
-
             ],
     "status":
             [
@@ -29,5 +60,10 @@
                     "icon": "error",
                     "caption": "Gateway timed out."
                 }
-            ]
+            ],
+    "actions":
+    [
+        { "type": "ValidationTextBox", "name": "Pincode", "caption": "Pincode" },
+        { "type": "Button", "label": "Register", "onClick": "PS4_Register($id, $Pincode);" }
+    ]
 }
