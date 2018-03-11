@@ -193,6 +193,7 @@ trait TCPConnection
             $this->SetStatus(204);
             return false;
         }
+        $this->SetStatus(102);
         $this->_send_handshake_request();
     }
 
