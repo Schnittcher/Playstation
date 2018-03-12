@@ -300,7 +300,7 @@ trait TCPConnection
         IPS_Sleep(20);
         $this->CreateSocket();
         $this->SocketSetTimeout();
-        socket_connect($this->socket,"192.168.1.88",997);
+        socket_connect($this->socket,$this->ReadPropertyString("IP"),997);
 
         $this->ReceiveEncrypted = false;
         $this->_send_hello_request();
