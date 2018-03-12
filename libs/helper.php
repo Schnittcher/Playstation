@@ -294,7 +294,7 @@ trait TCPConnection
         if (!$Status["Power"]) {
             $this->sendWakeup();
 
-            IPS_Sleep(40000);
+            IPS_Sleep($this->ReadPropertyInteger("BootTime"));
         }
         $this->sendLaunch();
         IPS_Sleep(20);

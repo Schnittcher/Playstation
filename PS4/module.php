@@ -25,8 +25,9 @@ class PS4 extends IPSModule
         //Register Propertys
         $this->RegisterPropertyString("IP", "");
         $this->RegisterPropertyString("Credentials", "");
-        $this->RegisterPropertyString("Games", "");
-        $this->RegisterTimer("PS4_UpdateActuallyStatus", 20000, "PS4_UpdateActuallyStatus($this->InstanceID);");
+        $this->RegisterPropertyInteger("BootTime", 40000);
+        $this->RegisterPropertyString("Games", "[]");
+        $this->RegisterTimer("PS4_UpdateActuallyStatus", 0, "PS4_UpdateActuallyStatus($this->InstanceID);");
 
         //Register Variablen
         $this->RegisterVariableBoolean("PS4_Power", "Status", "~Switch");
@@ -35,6 +36,7 @@ class PS4 extends IPSModule
 
     public function ApplyChanges()
     {
+        parent::ApplyChanges();
         $this->Buffer = "";
         $this->Seed = "";
         $this->ReceiveEncrypted = false;
