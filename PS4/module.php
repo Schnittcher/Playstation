@@ -1,6 +1,8 @@
 <?
 
 include_once(__DIR__ . "/../libs/helper.php");
+include_once(__DIR__ . "/../libs/PSStore.php");
+
 
 /**
  * @property bool $ReceiveEncrypted
@@ -19,14 +21,12 @@ class PS4 extends IPSModule
     {
         // Diese Zeile nicht löschen.
         parent::Create();
-        //Always create our own Client Socket I/O, when no parent is already available
-        $this->RequireParent("{3CFF0FD9-E306-41DB-9B5A-9D06D38576C3}");
 
         //Register Propertys
         $this->RegisterPropertyString("IP", "");
         $this->RegisterPropertyString("Credentials", "");
         $this->RegisterPropertyString("Games", "");
-        $this->RegisterTimer("PS4_UpdateActuallyStatus", 5000, "PS4_UpdateActuallyStatus($this->InstanceID);");
+        $this->RegisterTimer("PS4_UpdateActuallyStatus", 20000, "PS4_UpdateActuallyStatus($this->InstanceID);");
 
         //Register Variablen
         $this->RegisterVariableBoolean("PS4_Power", "Status", "~Switch");
@@ -45,45 +45,7 @@ class PS4 extends IPSModule
         $this->EnableAction("PS4_Game");
         $this->EnableAction("PS4_Power");
         $this->UpdateGamelist();
-        $this->SetTimerInterval("PS4_UpdateActuallyStatus",20000);
-    }
-
-    public function ReceiveData($JSONString)
-    {
-        $ReceiveData = json_decode($JSONString);
-        $DataIn = utf8_decode($ReceiveData->Buffer);
-        if ($this->ReceiveEncrypted) { // Hier empfangende Daten entschlüsseln
-            $this->SendDebug("Received Encrypted Data", $DataIn, 1); // 1 für default ist Hex-Ansicht
-            $random_seed = "\x10\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
-            $Data = openssl_decrypt($DataIn, "AES-128-CBC", $random_seed, OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING, $this->Seed); //Decrypt benutzt unser Passwort (random_seed) und als start IV den empfangenen Seed des PS4
-            $this->SendDebug("Received Decrypted Data", $Data, 0); // 1 für default ist Hex-Ansicht
-        } else { // Unverschlüsselte Daten.
-            $this->SendDebug("Received Plain Data", $DataIn, 1); // 1 für default ist Hex-Ansicht
-            $Data = $this->Buffer . $DataIn;
-            $Len = unpack('V', substr($Data, 0, 4))[1];
-            //$Data lang genug ?
-            if ($Len > strlen($Data)) { // Nein zu kurz, ab in den Buffer.
-                $this->Buffer = $Data;
-                return;
-            }
-            $this->Buffer = substr($Data, $Len); // Rest in den Buffer
-            //Empfangenes Paket parsen
-            $Packet = substr($Data, 4, $Len);
-            $Type = substr($Packet, 0, 4);
-            $Payload = substr($Packet, 4);
-
-            switch ($Type) {
-                case "pcco":
-                    $this->SendDebug("Hello Request Answer", $Payload, 1);
-                    $this->Seed = substr($Payload, 12, 16);
-                    $this->SendDebug("Seed received", substr($Payload, 12, 16), 1);
-                    break;
-                default:
-                    $this->SendDebug("unhandled type received", $Type, 0);
-                    $this->SendDebug("unhandled payload received", $Payload, 0);
-                    break;
-            }
-        }
+        //$this->SetTimerInterval("PS4_UpdateActuallyStatus",20000);
     }
 
     /** Public Functions to control PS4-System */
@@ -91,7 +53,7 @@ class PS4 extends IPSModule
     public function Register($pincode)
     {
         $this->Connect();
-        IPS_Sleep(10);
+        IPS_Sleep(100);
         $this->_send_login_request($pincode);
         IPS_Sleep(500);
         $this->Close();
@@ -100,9 +62,9 @@ class PS4 extends IPSModule
     public function Login()
     {
         $this->Connect();
-        IPS_Sleep(10);
+        IPS_Sleep(100);
         $this->_send_login_request();
-        IPS_Sleep(500);
+        IPS_Sleep(100);
         $this->Close();
     }
 
@@ -111,7 +73,7 @@ class PS4 extends IPSModule
         $this->Connect();
         IPS_Sleep(100);
         $this->_send_login_request();
-        IPS_Sleep(20);
+        IPS_Sleep(100);
         $this->_send_standby_request();
         $this->Close();
     }
@@ -139,10 +101,21 @@ class PS4 extends IPSModule
                     $Games = json_decode($GamesListString);
                     foreach($Games as $key=>$Game) {
                         if ($Game->GameID == $PS4Status["RUNNING-APP-TITLEID"]) {
+                            $this->SendDebug("GameID",$Game->GameID,0);
+                            $PSGame = new PSStore($Game->GameID);
                             SetValue(IPS_GetObjectIDByIdent("PS4_Game",$this->InstanceID), $key+1);
-                            $CoverURL = $this->getCover($Game->GameID);
-                            $CoverString ="<div align=\"right\">
+                            $CoverURL = $PSGame->getPicture();//$this->getCover($Game->GameID);
+                            $GameName = $PSGame->getGameName();
+                            $ProviderName = $PSGame->getProviderName();
+                            $Desc = $PSGame->getLongDesc();
+                            $CoverString ="<div align=\"center\">
+$GameName
+<br />
+$ProviderName
+<br />
 <img src=$CoverURL>
+<br />
+$Desc
 </div>";
                             SetValue(IPS_GetObjectIDByIdent("PS4_Cover",$this->InstanceID), $CoverString);
                         }

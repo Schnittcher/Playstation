@@ -19,6 +19,7 @@ class PS4_Dummy extends IPSModule {
 
     public function ApplyChanges()
     {
+        $this->SetStatus(102);
 
     }
 

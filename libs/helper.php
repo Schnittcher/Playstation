@@ -69,14 +69,26 @@ parent::SendDebug($Message, (string) $Data, $Format);
 
 }
 
+/**
+ * Trait TCPConnection
+ * Helper for tcp connection and packets
+ */
 trait TCPConnection
 {
+    private $socket;
+
+    /**
+     * Build and send the hello packet
+     */
     private function _send_hello_request()
     {
         $packet = "\x1c\x00\x00\x00\x70\x63\x63\x6f\x00\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
         $this->_send_msg($packet);
     }
 
+    /**
+     * Build and send the handshake packet
+     */
     private function _send_handshake_request()
     {
         $this->SendDebug("Used Seed", $this->Seed, 0);
@@ -93,7 +105,7 @@ trait TCPConnection
     }
 
     /**
-     *
+     * Build and send standby kacket
      */
     private function _send_standby_request()
     {
@@ -106,6 +118,10 @@ trait TCPConnection
         $this->_send_msg($Packet, true);
     }
 
+    /**
+     * Build and send the login packet, pincode is optional for registration
+     * @param string $pincode
+     */
     private function _send_login_request($pincode = "")
     {
         $AccountID = $this->ReadPropertyString("Credentials");
@@ -133,6 +149,10 @@ trait TCPConnection
         $this->_send_msg($Login, true);
     }
 
+    /**
+     * Build and send the boot package, to start game or app
+     * @param $title_id
+     */
     private function _send_boot_request($title_id)
     {
         $Package = "\x18\x00\x00\x00";
@@ -145,6 +165,11 @@ trait TCPConnection
         $this->_send_msg($Package, true);
     }
 
+    /**
+     * Send message via tcp connection, if encrypted is true, the message is encrypted
+     * @param $msg
+     * @param bool $encrypted
+     */
     private function _send_msg($msg, $encrypted = false)
     {
         $this->SendDebug("Send Data:", $msg, 1);
@@ -160,14 +185,107 @@ trait TCPConnection
             $this->SendDebug("Send encypted:", $msg, 1);
         }
 
-        $JSON['DataID'] = '{79827379-F36E-4ADA-8A95-5F8D1DC92FA9}';
-        $JSON['Buffer'] = utf8_encode($msg);
-        $SendData = json_encode($JSON);
-        //Send Data to Client Socket
-        $this->SendDataToParent($SendData);
+        if ($bytes = socket_send($this->socket, $msg, strlen($msg), 0)) {
+            $this->SendDebug(' socket', $bytes . ' bytes sent to ' . $this->ReadPropertyString("IP") . ':' . 997,0);
+        } else {
+            $this->SocketErrorHandler();
+        }
     }
 
 
+    /** Socket functions */
+
+    /**
+     * Create socket for tcp connection
+     */
+    private function CreateSocket() {
+
+        /** do nothing, if socket was already created */
+        if ($this->socket) {
+            $this->SendDebug('socket [instance]', 'already created',0);
+        }
+        /** create socket */
+        else if ($this->socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP)) {
+            $this->SendDebug('socket [instance]', 'created',0);
+        } else {
+            /** error handling */
+            $this->SocketErrorHandler();
+        }
+    }
+
+    /**
+     * sends a receive timeout to socket
+     * @param int $timeout
+     */
+    protected function SocketSetTimeout($timeout = 2)
+    {
+        if (socket_set_option($this->socket, SOL_SOCKET, SO_RCVTIMEO, array('sec' => $timeout, 'usec' => 0))) {
+            $this->SendDebug('socket [settings]', 'set timeout to ' . $timeout . 's',0);
+        } else {
+            $this->SocketErrorHandler();
+        }
+    }
+
+    /**
+     * received message via tcp, used to get the first seed
+     */
+    private function _receive_msg() {
+        $buffer = '';
+        if ($bytes = @socket_recv($this->socket, $buffer, 4096, 0) !== false) {
+            
+            $this->SendDebug('socket [receive]', $buffer ,0);
+            //$buffer =  utf8_decode($buffer);
+            if ($this->ReceiveEncrypted) { // Hier empfangende Daten entschlüsseln
+                $this->SendDebug("Received Encrypted Data", $DataIn, 1); // 1 für default ist Hex-Ansicht
+                $random_seed = "\x10\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+                $Data = openssl_decrypt($buffer, "AES-128-CBC", $random_seed, OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING, $this->Seed); //Decrypt benutzt unser Passwort (random_seed) und als start IV den empfangenen Seed des PS4
+                $this->SendDebug("Received Decrypted Data", $Data, 0); // 1 für default ist Hex-Ansicht
+            } else { // Unverschlüsselte Daten.
+                $this->SendDebug("Received Plain Data", $buffer, 1); // 1 für default ist Hex-Ansicht
+                $Data = $buffer;
+                $Len = unpack('V', substr($Data, 0, 4))[1];
+                //$Data lang genug ?
+                if ($Len > strlen($Data)) { // Nein zu kurz, ab in den Buffer.
+                    $this->Buffer = $Data;
+                    return;
+                }
+                $this->Buffer = substr($Data, $Len); // Rest in den Buffer
+                //Empfangenes Paket parsen
+                $Packet = substr($Data, 4, $Len);
+                $Type = substr($Packet, 0, 4);
+                $Payload = substr($Packet, 4);
+
+                switch ($Type) {
+                    case "pcco":
+                        $this->SendDebug("Hello Request Answer", $Payload, 1);
+                        $this->Seed = substr($Payload, 12, 16);
+                        $this->SendDebug("Seed received", substr($Payload, 12, 16), 1);
+                        break;
+                    default:
+                        $this->SendDebug("unhandled type received", $Type, 0);
+                        $this->SendDebug("unhandled payload received", $Payload, 0);
+                        break;
+                }
+            }
+        }
+    }
+
+    /**
+     * handles socket error messages
+     */
+    protected function SocketErrorHandler()
+    {
+        $error_code = socket_last_error();
+        $error_msg = socket_strerror($error_code);
+        $this->SendDebug('socket [error]', $error_code . ' message: ' . $error_msg,0);
+        exit(-1);
+    }
+
+
+    /**
+     * Connect socket to playstation 4
+     * @return bool
+     */
     private function Connect()
     {
         $Status = $this->getStatus();
@@ -180,15 +298,14 @@ trait TCPConnection
         }
         $this->sendLaunch();
         IPS_Sleep(20);
-        //Open the TCP Socket
-        $ParentID = IPS_GetInstance($this->InstanceID)["ConnectionID"];
-        IPS_SetProperty($ParentID, "Open", false);
-        IPS_Sleep(100);
-        IPS_SetProperty($ParentID, "Open", true);
-        IPS_ApplyChanges($ParentID);
-        IPS_Sleep(100);
+        $this->CreateSocket();
+        $this->SocketSetTimeout();
+        socket_connect($this->socket,"192.168.1.88",997);
+
         $this->ReceiveEncrypted = false;
         $this->_send_hello_request();
+        //Receive Answer to get the first Seed
+        $this->_receive_msg();
         if (!$this->WaitForSeed()) {
             $this->SetStatus(204);
             return false;
@@ -197,16 +314,21 @@ trait TCPConnection
         $this->_send_handshake_request();
     }
 
+    /**
+     * Close connection to Playstation 4
+     */
     private function Close()
     {
         $this->Seed = "";
-        //Cole the TCP Socket
-        $ParentID = IPS_GetInstance($this->InstanceID)["ConnectionID"];
-        IPS_SetProperty($ParentID, "Open", false);
-        IPS_Sleep(100);
-        @IPS_ApplyChanges($ParentID);
+        IPS_Sleep(200);
+        socket_close($this->socket);
+        $this->SendDebug("Socket","Closed",0);
     }
 
+    /**
+     * Get the public key for handshake
+     * @return string
+     */
     private function get_Public_Key_RSA()
     {
         $pk = <<<EOF
@@ -223,6 +345,10 @@ EOF;
         return $pk;
     }
 
+    /**
+     * Wait for seed
+     * @return bool
+     */
     private function WaitForSeed()
     {
         for ($i = 0; $i < 1000; $i++) {
@@ -238,6 +364,10 @@ EOF;
 
 }
 
+/**
+ * Trait DDPConnection
+ * Helper for ddp connection via udp and packets
+ */
 trait DDPConnection
 {
     /** DDP Connection */
