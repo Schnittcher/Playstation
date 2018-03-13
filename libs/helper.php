@@ -69,6 +69,24 @@ parent::SendDebug($Message, (string) $Data, $Format);
 
 }
 
+class RemoteKeys{
+    /**
+     * Keys for remote Control
+     */
+    const UP ="\x01\x00\x00\x00"; // 1
+    const DOWN = "\x02\x00\x00\x00"; // 2
+    const RIGHT = "\x04\x00\x00\x00"; // 4
+    const LEFT = "\x08\x00\x00\x00"; // 8
+    const ENTER = "\x10\x00\x00\x00"; // 16
+    const BACK = "\x20\x00\x00\x00"; //32
+    const OPTION = "\x40\x00\x00\x00"; //64
+    const PS = "\x80\x00\x00\x00"; //128
+    const KEY_OFF = "\x00\x01\x00\x00"; // 256
+    const CANCEL = "\x00\x02\x00\x00"; // 512
+    const OPEN_RC = "\x00\x04\x00\x00"; // 1024
+    const CLOSE_RC = "\x00\x08\x00\x00"; // 2048
+}
+
 /**
  * Trait TCPConnection
  * Helper for tcp connection and packets
@@ -76,6 +94,7 @@ parent::SendDebug($Message, (string) $Data, $Format);
 trait TCPConnection
 {
     private $socket;
+
 
     /**
      * Build and send the hello packet
@@ -165,6 +184,56 @@ trait TCPConnection
         $this->_send_msg($Package, true);
     }
 
+    private function _send_remote_control_request($remote_key, $hold_time = 0) {
+
+        $Package = "\x10\x00\x00\x00";
+        $Package .= "\x1c\x00\x00\x00";
+        $hold_time ="\x00";
+        switch ($remote_key) {
+            case "up":
+                $remote_key = RemoteKeys::UP;
+                break;
+            case "down":
+                $remote_key = RemoteKeys::DOWN;
+                break;
+            case "right":
+                $remote_key = RemoteKeys::RIGHT;
+                break;
+            case "left":
+                $remote_key = RemoteKeys::LEFT;
+                break;
+            case "enter":
+                $remote_key = RemoteKeys::ENTER;
+                break;
+            case "back":
+                $remote_key = RemoteKeys::BACK;
+                break;
+            case "option":
+                $remote_key = RemoteKeys::OPTION;
+                break;
+            case "ps":
+                $remote_key = RemoteKeys::PS;
+                break;
+            case "key_off":
+                $remote_key = RemoteKeys::KEY_OFF;
+                break;
+            case "cancel":
+                $remote_key = RemoteKeys::CANCEL;
+                break;
+            case "open_rc":
+                $remote_key = RemoteKeys::OPEN_RC;
+                break;
+            case "close_rc":
+                $remote_key = RemoteKeys::CLOSE_RC;
+                break;
+            default:
+                $this->SendDebug("Remote Keys","Key not available!",0);
+        }
+        $Package .= str_pad($remote_key, 4,"\x00");
+        $Package .= str_pad($hold_time, 4,"\x00");
+        $this->_send_msg($Package, true);
+    }
+
     /**
      * Send message via tcp connection, if encrypted is true, the message is encrypted
      * @param $msg
@@ -232,7 +301,7 @@ trait TCPConnection
     private function _receive_msg() {
         $buffer = '';
         if ($bytes = @socket_recv($this->socket, $buffer, 4096, 0) !== false) {
-            
+
             $this->SendDebug('socket [receive]', $buffer ,0);
             //$buffer =  utf8_decode($buffer);
             if ($this->ReceiveEncrypted) { // Hier empfangende Daten entschlüsseln
@@ -450,5 +519,42 @@ trait DDPConnection
             $Header[strtoupper($Key)] = trim(implode(':', $pair));
         }
         return $Header;
+    }
+
+
+}
+
+trait VariableProfile {
+    protected function RegisterProfileInteger($Name, $Icon, $Prefix, $Suffix, $MinValue, $MaxValue, $StepSize) {
+
+        if(!IPS_VariableProfileExists($Name)) {
+            IPS_CreateVariableProfile($Name, 1);
+        } else {
+            $profile = IPS_GetVariableProfile($Name);
+            if($profile['ProfileType'] != 1)
+                throw new Exception("Variable profile type does not match for profile ".$Name);
+        }
+
+        IPS_SetVariableProfileIcon($Name, $Icon);
+        IPS_SetVariableProfileText($Name, $Prefix, $Suffix);
+        IPS_SetVariableProfileValues($Name, $MinValue, $MaxValue, $StepSize);
+
+    }
+
+    protected function RegisterProfileIntegerEx($Name, $Icon, $Prefix, $Suffix, $Associations) {
+        if ( sizeof($Associations) === 0 ){
+            $MinValue = 0;
+            $MaxValue = 0;
+        } else {
+            $MinValue = $Associations[0][0];
+            $MaxValue = $Associations[sizeof($Associations)-1][0];
+        }
+
+        $this->RegisterProfileInteger($Name, $Icon, $Prefix, $Suffix, $MinValue, $MaxValue, 0);
+
+        foreach($Associations as $Association) {
+            IPS_SetVariableProfileAssociation($Name, $Association[0], $Association[1], $Association[2], $Association[3]);
+        }
+
     }
 }

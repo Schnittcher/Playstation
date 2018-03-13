@@ -7,10 +7,15 @@ Das Modul befindet sich noch in einer Beta Phase.
 * Wecken der PS4 aus dem Ruhemodus
 * PS4 in den Ruhemodus versetzen
 * PS4 Spiele / Apps starten
+* Button senden:
+    * Hoch, Runter, Links, Rechts
+    * Option
+    * Playstation Taste (PS)
+    * Enter, Zurück
  
 
 ## Installation
-Dieses Modul besteht aus zwei Modueln (PS4 und PS4 Dummy).
+Dieses Modul besteht aus zwei Modulen (PS4 und PS4 Dummy).
 Die eigentlichen Funktionen sind in dem PS4 Modul vorhanden.
 Das PS4-Dummy Modul wird benötigt, um die Playstation mit IP-Symcon zu verknüpfen.
 
@@ -42,6 +47,7 @@ Die PS4 Instanz wird im Objektbaum erzeugt.
 Feld | Erklärung
 ------------ | -------------
 IP-Adresse der PS4 | Hier die IP-Adresse der PS4 eintragen
+Bootzeit | Hier wird die Zeit eingetragen, die die Playstation in etwa zum booten benötigt.
 User-Credentials | Hier die User-Credentials der PS4 eintragen - siehe Registrierung von IPS an der PS4
 Gameliste | Hier können die Spiele / Apps eingetragen werden, welche über IPS gestartet werden sollen
 
@@ -49,7 +55,7 @@ Gameliste | Hier können die Spiele / Apps eingetragen werden, welche über IPS 
 Innerhalb der Testumgebung wird die PS4, registriert, weiteres ist hier zu finden: Registrierung von IPS an der PS4
  
 ### Registrierung von IPS an der PS4
-Es wird die App PS4 Second Screen auf einem Smartphone oder Tavlet benötigt.
+Es wird die App PS4 Second Screen auf einem Smartphone oder Tablet benötigt.
 Diese App auf dem Gerät öffnen und nach neuen Geräten im Netzwerk suchen.
 Nun sollte eine PS4 mit dem Namen IP-Symcon gefunden (das ist das PS4-Dummy Modul) werden.
 Diesen Eintrag auswählen und die App wird versuchen sich mit IP-Symcon zu verbinden.

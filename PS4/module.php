@@ -89,6 +89,21 @@ class PS4 extends IPSModule
         $this->Close();
     }
 
+    public function RemoteControl($remote_key, $hold_time = 0)
+    {
+        $this->Connect();
+        IPS_Sleep(100);
+        $this->_send_login_request();
+        $this->_send_remote_control_request("open_rc",0);
+        IPS_Sleep(400);
+        $this->_send_remote_control_request($remote_key,0);
+        IPS_Sleep(100);
+        $this->_send_remote_control_request("key_off",0);
+        IPS_Sleep(200);
+        $this->_send_remote_control_request("close_rc",0);
+        $this->Close();
+    }
+
     public function UpdateActuallyStatus() {
         $PS4Status = $this->getStatus();
 
@@ -106,19 +121,19 @@ class PS4 extends IPSModule
                             $this->SendDebug("GameID",$Game->GameID,0);
                             $PSGame = new PSStore($Game->GameID);
                             SetValue(IPS_GetObjectIDByIdent("PS4_Game",$this->InstanceID), $key+1);
-                            $CoverURL = $PSGame->getPicture();//$this->getCover($Game->GameID);
+                            $CoverURL = $PSGame->getPicture();
                             $GameName = $PSGame->getGameName();
                             $ProviderName = $PSGame->getProviderName();
                             $Desc = $PSGame->getLongDesc();
                             $CoverString ="<div align=\"center\">
-$GameName
-<br />
-$ProviderName
-<br />
-<img src=$CoverURL>
-<br />
-$Desc
-</div>";
+                            $GameName
+                            <br />
+                            $ProviderName
+                            <br />
+                            <img src=$CoverURL>
+                            <br />
+                            $Desc
+                            </div>";
                             SetValue(IPS_GetObjectIDByIdent("PS4_Cover",$this->InstanceID), $CoverString);
                         }
                     }
@@ -133,8 +148,6 @@ $Desc
 
 
     /** internal private Functions */
-
-    //IPS Functions
 
     private function UpdateGamelist()
     {
@@ -154,16 +167,6 @@ $Desc
             }
             $this->RegisterProfileIntegerEx("PS4.Games", "Database", "", "", $Associations);
         }
-    }
-
-    private function getCover($title_id) {
-        $cover = file_get_contents(__DIR__ . "/../libs/cover.json");
-        $cover_data = json_decode($cover,true);
-        IPS_LogMessage("Cover","test");
-        if (array_key_exists($title_id,$cover_data)) {
-            return $cover_data[$title_id];
-        }
-        return false;
     }
 
     /** IPS Functions */
@@ -187,38 +190,4 @@ $Desc
                 break;
         }
     }
-
-    protected function RegisterProfileInteger($Name, $Icon, $Prefix, $Suffix, $MinValue, $MaxValue, $StepSize) {
-
-        if(!IPS_VariableProfileExists($Name)) {
-            IPS_CreateVariableProfile($Name, 1);
-        } else {
-            $profile = IPS_GetVariableProfile($Name);
-            if($profile['ProfileType'] != 1)
-                throw new Exception("Variable profile type does not match for profile ".$Name);
-        }
-
-        IPS_SetVariableProfileIcon($Name, $Icon);
-        IPS_SetVariableProfileText($Name, $Prefix, $Suffix);
-        IPS_SetVariableProfileValues($Name, $MinValue, $MaxValue, $StepSize);
-
-    }
-
-    protected function RegisterProfileIntegerEx($Name, $Icon, $Prefix, $Suffix, $Associations) {
-        if ( sizeof($Associations) === 0 ){
-            $MinValue = 0;
-            $MaxValue = 0;
-        } else {
-            $MinValue = $Associations[0][0];
-            $MaxValue = $Associations[sizeof($Associations)-1][0];
-        }
-
-        $this->RegisterProfileInteger($Name, $Icon, $Prefix, $Suffix, $MinValue, $MaxValue, 0);
-
-        foreach($Associations as $Association) {
-            IPS_SetVariableProfileAssociation($Name, $Association[0], $Association[1], $Association[2], $Association[3]);
-        }
-
-    }
-
 }
