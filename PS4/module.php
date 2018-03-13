@@ -133,7 +133,7 @@ class PS4 extends IPSModule
                             <br />
                             <img src=$CoverURL>
                             <br />
-                            $Desc
+                            
                             </div>";
                             SetValue(IPS_GetObjectIDByIdent("PS4_Cover",$this->InstanceID), $CoverString);
                         }
