@@ -15,7 +15,8 @@ class PS4 extends IPSModule
     use BufferHelper,
         DebugHelper,
         TCPConnection,
-        DDPConnection;
+        DDPConnection,
+        VariableProfile;
 
     public function Create()
     {
