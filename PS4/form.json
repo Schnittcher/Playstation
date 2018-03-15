@@ -6,7 +6,8 @@
                     "label": "Sie müssen die lokale IP-Adresse im IO konfigurieren."
                 },
                 { "type": "ValidationTextBox", "name": "IP", "caption": "IP Adresse des PS4-Systems" },
-                { "type": "NumberSpinner", "name": "BootTime", "caption": "Bootzeit" },
+                { "type": "IntervalBox", "name": "BootTime", "caption": "Bootzeit" },
+                { "type": "IntervalBox", "name": "UpdateTimerInterval", "caption": "Sekunden" },
                 { "type": "ValidationTextBox", "name": "Credentials", "caption": "User-Credentials" },
                 {
                     "type": "List",

@@ -26,7 +26,8 @@ class PS4 extends IPSModule
         //Register Propertys
         $this->RegisterPropertyString("IP", "");
         $this->RegisterPropertyString("Credentials", "");
-        $this->RegisterPropertyInteger("BootTime", 40000);
+        $this->RegisterPropertyInteger("BootTime", 40);
+        $this->RegisterPropertyInteger("UpdateTimerInterval", 20);
         $this->RegisterPropertyString("Games", "[]");
         $this->RegisterTimer("PS4_UpdateActuallyStatus", 0, "PS4_UpdateActuallyStatus($this->InstanceID);");
 
@@ -52,7 +53,7 @@ class PS4 extends IPSModule
         $this->EnableAction("PS4_Power");
         $this->EnableAction("PS4_Controls");
         $this->UpdateGamelist();
-        $this->SetTimerInterval("PS4_UpdateActuallyStatus",20000);
+        $this->SetTimerInterval("PS4_UpdateActuallyStatus",$this->ReadPropertyInteger("UpdateTimerInterval") * 1000);
     }
 
     /** Public Functions to control PS4-System */
