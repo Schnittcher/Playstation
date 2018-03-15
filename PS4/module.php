@@ -33,6 +33,9 @@ class PS4 extends IPSModule
         //Register Variablen
         $this->RegisterVariableBoolean("PS4_Power", "Status", "~Switch");
         $this->RegisterVariableString("PS4_Cover","Cover", "~HTMLBox");
+
+        $this->RegisterControls();
+        $this->RegisterVariableInteger("PS4_Controls","Controls", "PS4.Controls");
     }
 
     public function ApplyChanges()
@@ -47,6 +50,7 @@ class PS4 extends IPSModule
         $this->RegisterVariableInteger("PS4_Game", "Games", "PS4.Games");
         $this->EnableAction("PS4_Game");
         $this->EnableAction("PS4_Power");
+        $this->EnableAction("PS4_Controls");
         $this->UpdateGamelist();
         //$this->SetTimerInterval("PS4_UpdateActuallyStatus",20000);
     }
@@ -93,7 +97,7 @@ class PS4 extends IPSModule
     public function RemoteControl($remote_key, $hold_time = 0)
     {
         $this->Connect();
-        IPS_Sleep(100);
+        IPS_Sleep(50);
         $this->_send_login_request();
         $this->_send_remote_control_request("open_rc",0);
         IPS_Sleep(400);
@@ -170,6 +174,23 @@ class PS4 extends IPSModule
         }
     }
 
+    private function RegisterControls()
+    {
+        if (IPS_VariableProfileExists("PS4.Controls"))
+            IPS_DeleteVariableProfile("PS4.Controls");
+
+        $Associations = Array();
+        $Associations[] = Array(1, "UP", "", -1);
+        $Associations[] = Array(2, "DOWN", "", -1);
+        $Associations[] = Array(3, "RIGHT", "", -1);
+        $Associations[] = Array(4, "LEFT", "", -1);
+        $Associations[] = Array(5, "ENTER", "", -1);
+        $Associations[] = Array(6, "BACK", "", -1);
+        $Associations[] = Array(7, "OPTION", "", -1);
+        $Associations[] = Array(8, "PS", "", -1);
+        $this->RegisterProfileIntegerEx("PS4.Controls", "Move", "", "", $Associations);
+    }
+
     /** IPS Functions */
 
     public function RequestAction($Ident, $Value) {
@@ -189,6 +210,35 @@ class PS4 extends IPSModule
                     SetValue(IPS_GetObjectIDByIdent($Ident,$this->InstanceID), false);
                 }
                 break;
+            case "PS4_Controls":
+                switch($Value) {
+                    case 1:
+                        $this->RemoteControl("up",0);
+                        break;
+                    case 2:
+                        $this->RemoteControl("down",0);
+                        break;
+                    case 3:
+                        $this->RemoteControl("right",0);
+                        break;
+                    case 4:
+                        $this->RemoteControl("left",0);
+                        break;
+                    case 5:
+                        $this->RemoteControl("enter",0);
+                        break;
+                    case 6:
+                        $this->RemoteControl("back",0);
+                        break;
+                    case 7:
+                        $this->RemoteControl("option",0);
+                        break;
+                    case 8:
+                        $this->RemoteControl("ps",0);
+                        break;
+                    default:
+                        $this->SendDebug("PS4_Control", $value ." is an invalid control",0);
+                }
         }
     }
 }
