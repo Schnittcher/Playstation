@@ -52,7 +52,7 @@ class PS4 extends IPSModule
         $this->EnableAction("PS4_Power");
         $this->EnableAction("PS4_Controls");
         $this->UpdateGamelist();
-        //$this->SetTimerInterval("PS4_UpdateActuallyStatus",20000);
+        $this->SetTimerInterval("PS4_UpdateActuallyStatus",20000);
     }
 
     /** Public Functions to control PS4-System */
