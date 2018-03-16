@@ -5,9 +5,7 @@ Das Modul befindet sich noch in einer Beta Phase.
 **Inhaltsverzeichnis**
 
 1. [Funktionsumfang](#1-funktionsumfang)  
-2. [Installtion](#2-installation)  
-3. [Installation](#3-installation)   
-
+2. [Installtion](#2-installation) 
 
 ## 1. Funktionsumfang 
 * Wecken der PS4 aus dem Ruhemodus
