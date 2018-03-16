@@ -2,8 +2,14 @@
 Mit diesem Modul ist es möglich, ein PS4-System über IP-Symcon zu steuern.
 Das Modul befindet sich noch in einer Beta Phase.
 
+**Inhaltsverzeichnis**
 
-## Funktionen 
+1. [Funktionsumfang](#1-funktionsumfang)  
+2. [Installtion](#2-installation)  
+3. [Installation](#3-installation)   
+
+
+## 1. Funktionsumfang 
 * Wecken der PS4 aus dem Ruhemodus
 * PS4 in den Ruhemodus versetzen
 * PS4 Spiele / Apps starten
@@ -14,7 +20,7 @@ Das Modul befindet sich noch in einer Beta Phase.
     * Enter, Zurück
  
 
-## Installation
+## 2. Installation
 Dieses Modul besteht aus zwei Modulen (PS4 und PS4 Dummy).
 Die eigentlichen Funktionen sind in dem PS4 Modul vorhanden.
 Das PS4-Dummy Modul wird benötigt, um die Playstation mit IP-Symcon zu verknüpfen.
@@ -57,3 +63,4 @@ Gerät hinzufügen, das IP-Symcon Modul autorisiert werden. Dort wird ein 8 stel
 Diesen Pincode nun in dem Konfigurationsformular der PS4 Instanz in dem Feld Pincode eingeben und den Button Register anklicken.
 
 Nun sollte die PS4 mit IP-Symcon verknüpft sein.
+
