@@ -92,4 +92,17 @@ class PS4_Dummy extends IPSModule {
         return;
     }
 
+    public function GetConfigurationForParent()
+    {
+        $jsonarr["BindPort"] = 987;
+        $jsonarr["EnableBroadcast"] = 1;
+        $jsonarr["EnableLoopback"] = 1;
+        $jsonarr["EnableReuseAddress"] = 1;
+        $jsonarr["Host"] = "239.255.255.250";
+        $jsonarr["MulticastIP"] = "239.255.255.250";
+        $jsonarr["Port"] = 987;
+        $json = json_encode($jsonarr);
+        return $json;
+    }
+
 }
