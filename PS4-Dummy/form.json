@@ -8,6 +8,11 @@
     "status":
             [
                 {
+                    "code": 101,
+                    "icon": "inactive",
+                    "caption": "Creating instance."
+                },
+                {
                     "code": 102,
                     "icon": "active",
                     "caption": "Config valid"
