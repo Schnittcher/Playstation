@@ -14,12 +14,27 @@ class PS4_Dummy extends IPSModule {
         //Always create our own MultiCast I/O, when no parent is already available
         $this->RequireParent("{BAB408E0-0A0F-48C3-B14E-9FB2FA81F66A}");
         $this->RegisterVariableString("PS4_Credentials","Credentials");
+        $this->RegisterPropertyBoolean("DummyStatus", true);
 
     }
 
     public function ApplyChanges()
     {
+        parent::ApplyChanges();
+        $Instanz=IPS_GetInstance($this->InstanceID);
+        $ConnectionID = $Instanz['ConnectionID'];
+        $this->SendDebug("Objekt",$ConnectionID,0);
+        if ($ConnectionID<> 0) {
+            if($this->ReadPropertyBoolean("DummyStatus")) {
+                IPS_SetProperty($ConnectionID,"Open", true);
+                IPS_ApplyChanges($ConnectionID);
+            } else {
+                IPS_SetProperty($ConnectionID,"Open", false);
+                IPS_ApplyChanges($ConnectionID);
+            }
+        }
         $this->SetStatus(102);
+
 
     }
 
