@@ -3,11 +3,23 @@
             [
                 {
                     "type": "Label",
-                    "label": "Sie müssen die lokale IP-Adresse im IO konfigurieren."
+                    "label": "You have to configure the locale ip adress in the IO instance."
                 },
-                { "type": "ValidationTextBox", "name": "IP", "caption": "IP Adresse des PS4-Systems" },
-                { "type": "IntervalBox", "name": "BootTime", "caption": "Bootzeit in Sekunden" },
-                { "type": "IntervalBox", "name": "UpdateTimerInterval", "caption": "Updatetimer Sekunden" },
+                {
+                    "type": "Label",
+                    "label": "IP Adresse des PS4-Systems"
+                },
+                { "type": "ValidationTextBox", "name": "IP", "caption": "IP adress" },
+                {
+                    "type": "Label",
+                    "label": "Boottime in seconds"
+                },
+                { "type": "IntervalBox", "name": "BootTime", "caption": "seconds" },
+                {
+                    "type": "Label",
+                    "label": "Interval from the update timer (seconds)"
+                },
+                { "type": "IntervalBox", "name": "UpdateTimerInterval", "caption": "seconds" },
                 { "type": "ValidationTextBox", "name": "Credentials", "caption": "User-Credentials" },
                 {
                     "type": "List",
@@ -50,12 +62,12 @@
                 {
                     "code": 102,
                     "icon": "active",
-                    "caption": "Config valid"
+                    "caption": "PS4 active."
                 },
                 {
                     "code": 104,
                     "icon": "inactive",
-                    "caption": "Interface closed"
+                    "caption": "interface closed."
                 },
                 {
                     "code": 202,

@@ -1,8 +1,8 @@
 {
     "elements":
             [
-                { "type": "Label", "label": "Diese Instanz muss nur für die Registrierung der PS4 aktiv sein, danach kann sie deaktiviert der gelöscht werden." },
-                { "type": "CheckBox", "name": "DummyStatus", "caption": "Dummy aktivieren" }
+                { "type": "Label", "label": "This instance is needed for the registration from the PS4, in can be deleted if credentials are available." },
+                { "type": "CheckBox", "name": "DummyStatus", "caption": "activate dummy" }
 
             ],
     "status":
@@ -15,12 +15,12 @@
                 {
                     "code": 102,
                     "icon": "active",
-                    "caption": "Config valid"
+                    "caption": "PS4 Dummy active."
                 },
                 {
                     "code": 104,
                     "icon": "inactive",
-                    "caption": "Interface closed"
+                    "caption": "interface closed."
                 },
                 {
                     "code": 202,
