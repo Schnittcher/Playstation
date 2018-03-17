@@ -98,12 +98,12 @@ class PS4 extends IPSModule
     public function RemoteControl($remote_key, $hold_time = 0)
     {
         $this->Connect();
-        IPS_Sleep(50);
+        IPS_Sleep(100);
         $this->_send_login_request();
         $this->_send_remote_control_request("open_rc",0);
         IPS_Sleep(400);
         $this->_send_remote_control_request($remote_key,0);
-        IPS_Sleep(100);
+        IPS_Sleep(200);
         $this->_send_remote_control_request("key_off",0);
         IPS_Sleep(200);
         $this->_send_remote_control_request("close_rc",0);
