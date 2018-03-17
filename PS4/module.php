@@ -32,11 +32,11 @@ class PS4 extends IPSModule
         $this->RegisterTimer("PS4_UpdateActuallyStatus", 0, "PS4_UpdateActuallyStatus($this->InstanceID);");
 
         //Register Variablen
-        $this->RegisterVariableBoolean("PS4_Power", "Status", "~Switch");
-        $this->RegisterVariableString("PS4_Cover","Cover", "~HTMLBox");
+        $this->RegisterVariableString("PS4_Cover","Cover", "~HTMLBox",0);
+        $this->RegisterVariableBoolean("PS4_Power", "Status", "~Switch",1);
 
         $this->RegisterControls();
-        $this->RegisterVariableInteger("PS4_Controls","Controls", "PS4.Controls");
+        $this->RegisterVariableInteger("PS4_Controls","Controls", "PS4.Controls",3);
     }
 
     public function ApplyChanges()
@@ -48,7 +48,7 @@ class PS4 extends IPSModule
 
         if(!IPS_VariableProfileExists("PS4.Games"))
             $this->RegisterProfileIntegerEx("PS4.Games", "Database", "", "", Array());
-        $this->RegisterVariableInteger("PS4_Game", "Games", "PS4.Games");
+        $this->RegisterVariableInteger("PS4_Game", "Games", "PS4.Games",2);
         $this->EnableAction("PS4_Game");
         $this->EnableAction("PS4_Power");
         $this->EnableAction("PS4_Controls");
