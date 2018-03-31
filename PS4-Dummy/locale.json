@@ -1,17 +1,10 @@
 {
 	"translations": {
 		"de": {
-			"You have to configure the locale ip adress in the IO instance.": "Sie müssen die lokale IP-Adresse im IO konfigurieren.",
-			"IP adress from the PS4 system": "IP Adresse des PS4-Systems",
-			"IP adress": "IP-Adresse",
-			"Boottime in seconds": "Ladezeit in Sekunden",
-			"seconds": "Sekunden",
-			"Interval from the update timer (seconds)": "Intervallabfrage des Updatetimers (Sekunden)",
-			"Game Name": "Spielname",
-			"Pincode": "Pincode",
-			"Register": "Registrieren",
+			"This instance is needed for the registration from the PS4, in can be deleted if credentials are available.": "Diese Instanz muss nur für die Registrierung der PS4 aktiv sein, danach kann sie deaktiviert der gelöscht werden.",
+			"activate dummy": "Dummy aktivieren",
 			"Creating instance.": "Die Instanz wird erstellt.",
-			"PS4 active.": "PS4 aktiv.",
+			"PS4 Dummy active.": "PS4 Dummy aktiv.",
 			"interface closed.": "Interface geschlossen.",
 			"Host is empty.": "IP Adresse darf nicht leer sein.",
 			"Gateway timed out.": "Gateway Zeitüberschreitung."
