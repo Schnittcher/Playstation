@@ -1,4 +1,5 @@
 <a href="https://www.symcon.de"><img src="https://img.shields.io/badge/IP--Symcon-5.0-blue.svg?style=flat-square"/></a>
+<a href="https://styleci.io/repos/120787671"><img src="https://styleci.io/repos/120787671/shield?branch=master" alt="StyleCI"></a>
 <br />
 
 # IPS-PS4
