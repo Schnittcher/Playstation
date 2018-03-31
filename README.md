@@ -1,3 +1,6 @@
+<a href="https://www.symcon.de"><img src="https://img.shields.io/badge/IP--Symcon-5.0-blue.svg?style=flat-square"/></a>
+<br />
+
 # IPS-PS4
 Mit diesem Modul ist es möglich, ein PS4-System über IP-Symcon zu steuern.
 Das Modul befindet sich noch in einer Beta Phase.
@@ -40,6 +43,7 @@ Die PS4 Instanz wird im Objektbaum erzeugt.
 Feld | Erklärung
 ------------ | -------------
 IP-Adresse der PS4 | Hier die IP-Adresse der PS4 eintragen
+Auto Login | Hier wird angegeben, ob beim aufwecken der PS4, der Benutzer direkt eingeloggt werden soll.
 Bootzeit | Hier wird die Zeit eingetragen, die die Playstation in etwa zum booten benötigt.
 Updatetimer | Hier wird die Zeit eingetragen, wie oft die PS4 nach dem aktuellen Status befragt werden soll.
 User-Credentials | Hier die User-Credentials der PS4 eintragen - siehe Registrierung von IPS an der PS4
@@ -61,4 +65,3 @@ Gerät hinzufügen, das IP-Symcon Modul autorisiert werden. Dort wird ein 8 stel
 Diesen Pincode nun in dem Konfigurationsformular der PS4 Instanz in dem Feld Pincode eingeben und den Button Register anklicken.
 
 Nun sollte die PS4 mit IP-Symcon verknüpft sein.
-

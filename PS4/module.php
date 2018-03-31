@@ -26,6 +26,7 @@ class PS4 extends IPSModule
         //Register Propertys
         $this->RegisterPropertyString("IP", "");
         $this->RegisterPropertyString("Credentials", "");
+        $this->RegisterPropertyBoolean("AutoLogin", true);
         $this->RegisterPropertyInteger("BootTime", 40);
         $this->RegisterPropertyInteger("UpdateTimerInterval", 20);
         $this->RegisterPropertyString("Games", "[]");
@@ -58,6 +59,11 @@ class PS4 extends IPSModule
 
     /** Public Functions to control PS4-System */
 
+    public function WakeUp()
+    {
+        $this->sendWakeup();
+    }
+
     public function Register($pincode)
     {
         $this->Connect();
@@ -66,6 +72,7 @@ class PS4 extends IPSModule
         IPS_Sleep(500);
         $this->Close();
     }
+
 
     public function Login()
     {
@@ -189,6 +196,7 @@ class PS4 extends IPSModule
         $Associations[] = Array(6, "BACK", "", -1);
         $Associations[] = Array(7, "OPTION", "", -1);
         $Associations[] = Array(8, "PS", "", -1);
+        $Associations[] = Array(9, "LOGIN", "", -1);
         $this->RegisterProfileIntegerEx("PS4.Controls", "Move", "", "", $Associations);
     }
 
@@ -204,8 +212,14 @@ class PS4 extends IPSModule
                 break;
             case "PS4_Power":
                 If ($Value) {
-                    $this->Login();
-                    SetValue(IPS_GetObjectIDByIdent($Ident,$this->InstanceID), true);
+                    if ($this->ReadPropertyBoolean("AutoLogin")) {
+                        $this->Login();
+                        SetValue(IPS_GetObjectIDByIdent($Ident,$this->InstanceID), true);
+                    } else {
+                        $this->SendDebug("Wakeup","Drin",0);
+                        $this->WakeUp();
+                        SetValue(IPS_GetObjectIDByIdent($Ident,$this->InstanceID), true);
+                    }
                 } else {
                     $this->Standby();
                     SetValue(IPS_GetObjectIDByIdent($Ident,$this->InstanceID), false);
@@ -236,6 +250,9 @@ class PS4 extends IPSModule
                         break;
                     case 8:
                         $this->RemoteControl("ps",0);
+                        break;
+                    case 9:
+                        $this->Login();
                         break;
                     default:
                         $this->SendDebug("PS4_Control", $value ." is an invalid control",0);

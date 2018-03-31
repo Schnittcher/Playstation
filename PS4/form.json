@@ -10,6 +10,7 @@
                     "label": "IP Adresse des PS4-Systems"
                 },
                 { "type": "ValidationTextBox", "name": "IP", "caption": "IP adress" },
+                { "type": "CheckBox", "name": "AutoLogin", "caption": "Auto Login" },
                 {
                     "type": "Label",
                     "label": "Boottime in seconds"
