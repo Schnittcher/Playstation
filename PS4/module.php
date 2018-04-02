@@ -28,7 +28,8 @@ class PS4 extends IPSModule
         $this->RegisterPropertyInteger('BootTime', 40);
         $this->RegisterPropertyInteger('UpdateTimerInterval', 20);
         $this->RegisterPropertyString('Games', '[]');
-        $this->RegisterTimer('PS4_UpdateActuallyStatus', 0, "PS4_UpdateActuallyStatus($this->InstanceID);");
+        //$this->RegisterTimer('PS4_UpdateActuallyStatus', 20000, "PS4_UpdateActuallyStatus($this->InstanceID);");
+        $this->RegisterTimer('PS4_UpdateActuallyStatus', 0, 'PS4_UpdateActuallyStatus($_IPS[\'TARGET\']);');
 
         //Register Variablen
         $this->RegisterVariableString('PS4_Cover', 'Cover', '~HTMLBox', 0);
