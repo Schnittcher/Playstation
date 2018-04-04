@@ -436,6 +436,7 @@ trait DDPConnection
         $packet .= 'device-discovery-protocol-version:00020020\n';
 
         $socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
+        socket_set_option($socket, SOL_SOCKET, SO_RCVTIMEO, array('sec' => 2, 'usec' => 0));
         socket_set_option($socket, SOL_SOCKET, SO_BROADCAST, 1);
         socket_sendto($socket, $packet, strlen($packet), 0, '255.255.255.255', 987);
         socket_recvfrom($socket, $result, 1024, 0, $ipaddress, $port);
