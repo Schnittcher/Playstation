@@ -13,6 +13,7 @@ class PSStore
     private $Picture;
     private $ReleaseDate;
     private $ProviderName;
+    private $Genre;
 
     private $StarRating;
 
@@ -45,6 +46,7 @@ class PSStore
         $this->ReleaseDate = $obj->release_date;
         $this->ProviderName = $obj->provider_name;
         $this->StarRating = $obj->star_rating;
+        $this->Genre = $obj->metadata->genre->values[0];
     }
 
     /**
@@ -117,5 +119,10 @@ class PSStore
     public function getStarRating()
     {
         return $this->StarRating;
+    }
+
+    public function getGenre()
+    {
+        return $this->Genre;
     }
 }

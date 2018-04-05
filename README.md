@@ -66,3 +66,8 @@ Gerät hinzufügen, das IP-Symcon Modul autorisiert werden. Dort wird ein 8 stel
 Diesen Pincode nun in dem Konfigurationsformular der PS4 Instanz in dem Feld Pincode eingeben und den Button Register anklicken.
 
 Nun sollte die PS4 mit IP-Symcon verknüpft sein.
+
+## Bildnachweise
+
+### Playstation Logo
+<div>Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>

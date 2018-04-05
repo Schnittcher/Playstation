@@ -543,4 +543,21 @@ trait VariableProfile
             IPS_SetVariableProfileAssociation($Name, $Association[0], $Association[1], $Association[2], $Association[3]);
         }
     }
+
+    protected function RegisterMediaObject($Ident, $Name, $Typ, $Parent, $Position, $Cached, $Filename)
+    {
+        if (!IPS_MediaExists(@$this->GetIDForIdent($Ident))) {
+            // Image im MedienPool anlegen
+            $MediaID = IPS_CreateMedia($Typ);
+            // Medienobjekt einsortieren unter Kategorie $catid
+            IPS_SetParent($MediaID, $Parent);
+            IPS_SetIdent ($MediaID, $Ident);
+            IPS_SetName($MediaID, $Name);
+            IPS_SetPosition($MediaID, $Position);
+            IPS_SetMediaCached($MediaID, $Cached);
+            $ImageFile = IPS_GetKernelDir()."media".DIRECTORY_SEPARATOR.$Filename;  // Image-Datei
+            IPS_SetMediaFile($MediaID, $ImageFile, false);    // Image im MedienPool mit Image-Datei verbinden
+        }
+        return;
+    }
 }

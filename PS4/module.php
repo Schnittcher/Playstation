@@ -32,11 +32,15 @@ class PS4 extends IPSModule
         $this->RegisterTimer('PS4_UpdateActuallyStatus', 0, 'PS4_UpdateActuallyStatus($_IPS[\'TARGET\']);');
 
         //Register Variablen
-        $this->RegisterVariableString('PS4_Cover', 'Cover', '~HTMLBox', 0);
-        $this->RegisterVariableBoolean('PS4_Power', 'Status', '~Switch', 1);
-
+        $this->RegisterMediaObject("PS4_MediaCover", "Cover", 1, $this->InstanceID, 0, true, "Cover.png");
+        //$this->RegisterVariableString('PS4_Cover', 'Cover', '~HTMLBox', 0);
+        $this->RegisterVariableString('PS4_AppTitle', 'Spiel/App', '', 1);
+        $this->RegisterVariableString('PS4_AppPublisher', 'Publisher', '', 2);
+        $this->RegisterVariableString('PS4_AppGenre', 'Genre', '', 3);
+        $this->RegisterVariableBoolean('PS4_Power', 'Status', '~Switch', 4);
         $this->RegisterControls();
-        $this->RegisterVariableInteger('PS4_Controls', 'Controls', 'PS4.Controls', 3);
+        $this->RegisterVariableInteger('PS4_Controls', 'Controls', 'PS4.Controls', 6);
+
     }
 
     public function ApplyChanges()
@@ -49,7 +53,7 @@ class PS4 extends IPSModule
         if (!IPS_VariableProfileExists('PS4.Games')) {
             $this->RegisterProfileIntegerEx('PS4.Games', 'Database', '', '', array());
         }
-        $this->RegisterVariableInteger('PS4_Game', 'Games', 'PS4.Games', 2);
+        $this->RegisterVariableInteger('PS4_Game', 'Games', 'PS4.Games', 5);
         $this->EnableAction('PS4_Game');
         $this->EnableAction('PS4_Power');
         $this->EnableAction('PS4_Controls');
@@ -133,32 +137,45 @@ class PS4 extends IPSModule
                             $this->SendDebug('GameID', $Game->GameID, 0);
                             $PSGame = new PSStore($Game->GameID);
                             SetValue(IPS_GetObjectIDByIdent('PS4_Game', $this->InstanceID), $key + 1);
-                            $CoverURL = $PSGame->getPicture();
-                            $GameName = $PSGame->getGameName();
-                            $ProviderName = $PSGame->getProviderName();
-                            $Desc = $PSGame->getLongDesc();
-                            $CoverString = "<div align=\"center\">
-                            $GameName
-                            <br />
-                            $ProviderName
-                            <br />
-                            <img src=$CoverURL>
-                            <br />
-                            
-                            </div>";
-                            SetValue(IPS_GetObjectIDByIdent('PS4_Cover', $this->InstanceID), $CoverString);
+                            SetValue(IPS_GetObjectIDByIdent('PS4_AppTitle', $this->InstanceID), $PSGame->getGameName());
+                            SetValue(IPS_GetObjectIDByIdent('PS4_AppPublisher', $this->InstanceID), $PSGame->getProviderName());
+                            SetValue(IPS_GetObjectIDByIdent('PS4_AppGenre', $this->InstanceID), $PSGame->getGenre());
+                            $this->GetCover($PSGame->getPicture());
                         }
                     }
                 }
             } else {
+                $this->GetCover();
                 SetValue(IPS_GetObjectIDByIdent('PS4_Game', $this->InstanceID), 0);
+                SetValue(IPS_GetObjectIDByIdent('PS4_AppTitle', $this->InstanceID),"");
+                SetValue(IPS_GetObjectIDByIdent('PS4_AppPublisher', $this->InstanceID), "");
+                SetValue(IPS_GetObjectIDByIdent('PS4_AppGenre', $this->InstanceID),"");
             }
         } else {
+            $this->GetCover();
+            SetValue(IPS_GetObjectIDByIdent('PS4_Game', $this->InstanceID), 0);
+            SetValue(IPS_GetObjectIDByIdent('PS4_AppTitle', $this->InstanceID),"");
+            SetValue(IPS_GetObjectIDByIdent('PS4_AppPublisher', $this->InstanceID), "");
+            SetValue(IPS_GetObjectIDByIdent('PS4_AppGenre', $this->InstanceID), "");
             SetValue(IPS_GetObjectIDByIdent('PS4_Power', $this->InstanceID), false);
         }
     }
 
-    /** internal private Functions */
+        /** internal private Functions */
+
+    private function GetCover($URL = NULL)
+    {
+        if ($URL <> NULL) {
+            $Content = file_get_contents($URL);
+        } else {
+            $Content = file_get_contents(__DIR__ . '/../imgs/default_cover.png');
+        }
+
+        IPS_SetMediaContent($this->GetIDForIdent("PS4_MediaCover"), base64_encode($Content));  //Bild Base64 codieren und ablegen
+        IPS_SendMediaEvent($this->GetIDForIdent("PS4_MediaCover")); //aktualisieren
+        return;
+    }
+
     private function UpdateGamelist()
     {
         $GamesListString = $this->ReadPropertyString('Games');
@@ -256,7 +273,7 @@ class PS4 extends IPSModule
                         $this->Login();
                         break;
                     default:
-                        $this->SendDebug('PS4_Control', $value . ' is an invalid control', 0);
+                        $this->SendDebug('PS4_Control', $Value . ' is an invalid control', 0);
                 }
         }
     }
