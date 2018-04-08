@@ -470,7 +470,7 @@ trait DDPConnection
         $packet .= 'user-credential:' . $this->ReadPropertyString('Credentials') . "\n";
         $packet .= "device-discovery-protocol-version:00020020\n";
 
-        $this->SendDebug('sendWakeUP', $packet,0);
+        $this->SendDebug('sendWakeUP', $packet, 0);
         $this->sendDDP($packet);
     }
 
