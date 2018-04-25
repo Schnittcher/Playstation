@@ -14,7 +14,9 @@
 			"PS4 active.": "PS4 aktiv.",
 			"interface closed.": "Interface geschlossen.",
 			"Host is empty.": "IP Adresse darf nicht leer sein.",
-			"Gateway timed out.": "Gateway Zeitüberschreitung."
+			"Gateway timed out.": "Gateway Zeitüberschreitung.",
+			"Register PS4": "PS4 registrieren",
+			"Register PlayStation 4 System": "PlayStation 4 System registrieren"
 		}
 	}
 }

@@ -29,7 +29,7 @@
                     "add": true,
                     "delete": true,
                     "sort": {
-                        "column": "Index",
+                        "column": "GameName",
                         "direction": "ascending"
                     },
                     "columns": [{
@@ -83,7 +83,23 @@
             ],
     "actions":
     [
-        { "type": "ValidationTextBox", "name": "Pincode", "caption": "Pincode" },
-        { "type": "Button", "label": "Register", "onClick": "PS4_Register($id, $Pincode);" }
+        {
+            "type": "PopupButton",
+            "caption": "Register PS4",
+            "popup": {
+                "caption": "Register PlayStation 4 System",
+                "items": [
+                    {
+                        "type": "ValidationTextBox",
+                        "name": "Pincode", "caption": "Pincode"
+                    },
+                    {
+                        "type": "Button",
+                        "label": "Register",
+                        "onClick": "PS4_Register($id, $Pincode);"
+                    }
+                ]
+            }
+        }
     ]
 }
