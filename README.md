@@ -9,7 +9,8 @@ Das Modul befindet sich noch in einer Beta Phase.
 **Inhaltsverzeichnis**
 
 1. [Funktionsumfang](#1-funktionsumfang)  
-2. [Installation](#2-installation) 
+2. [Installation](#2-installation)
+3. [Spenden](#3-spenden)
 
 ## 1. Funktionsumfang 
 * Wecken der PS4 aus dem Ruhemodus
@@ -66,6 +67,12 @@ Gerät hinzufügen, das IP-Symcon Modul autorisiert werden. Dort wird ein 8 stel
 Diesen Pincode nun in dem Konfigurationsformular der PS4 Instanz in dem Feld Pincode eingeben und den Button Register anklicken.
 
 Nun sollte die PS4 mit IP-Symcon verknüpft sein.
+
+## 3. Spenden
+
+Dieses Modul ist für die nicht kommzerielle Nutzung kostenlos, freiweillige Unterstützungen für den Autor werden hier akzeptiert:  
+
+<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=EK4JRP87XLSHW" target="_blank"><img src="https://www.paypalobjects.com/de_DE/DE/i/btn/btn_donate_LG.gif" border="0" /></a>
 
 ## Bildnachweise
 
