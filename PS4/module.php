@@ -66,7 +66,7 @@ class PS4 extends IPSModule
         $this->sendWakeup();
     }
 
-    public function Register($pincode)
+    public function Register(int $pincode)
     {
         $this->Connect();
         IPS_Sleep(100);
@@ -94,7 +94,7 @@ class PS4 extends IPSModule
         $this->Close();
     }
 
-    public function StartTitle($title_id)
+    public function StartTitle(string $title_id)
     {
         $this->Connect();
         IPS_Sleep(100);
@@ -103,7 +103,7 @@ class PS4 extends IPSModule
         $this->Close();
     }
 
-    public function RemoteControl($remote_key, $hold_time = 0)
+    public function RemoteControl(string $remote_key, int $hold_time = 0)
     {
         $this->Connect();
         IPS_Sleep(100);
