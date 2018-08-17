@@ -1,6 +1,7 @@
-<a href="https://www.symcon.de"><img src="https://img.shields.io/badge/IP--Symcon-5.0-blue.svg?style=flat-square"/></a>
-<a href="https://styleci.io/repos/120787671"><img src="https://styleci.io/repos/120787671/shield?branch=master" alt="StyleCI"></a>
-<br />
+[![Version](https://img.shields.io/badge/Symcon-PHPModul-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
+![Version](https://img.shields.io/badge/Symcon%20Version-5.0%20%3E-blue.svg)
+[![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+[![StyleCI](https://styleci.io/repos/120787671/shield?style=flat)](https://styleci.io/repos/120787671)
 
 # IPS-PS4
 Mit diesem Modul ist es möglich, ein PS4-System über IP-Symcon zu steuern.
@@ -10,7 +11,9 @@ Das Modul befindet sich noch in einer Beta Phase.
 
 1. [Funktionsumfang](#1-funktionsumfang)  
 2. [Installation](#2-installation)
-3. [Spenden](#3-spenden)
+3. [Sonstiges](#3-sonstiges)
+4. [Spenden](#4-spenden)
+5. [Lizenz](5-lizenz)
 
 ## 1. Funktionsumfang 
 * Wecken der PS4 aus dem Ruhemodus
@@ -68,13 +71,24 @@ Diesen Pincode nun in dem Konfigurationsformular der PS4 Instanz in dem Feld Pin
 
 Nun sollte die PS4 mit IP-Symcon verknüpft sein.
 
-## 3. Spenden
+## 3. Sonstiges
+
+Auf die Idee ein IP-Symcon Modul für die PS4 zu schreiben bin ich gekommen, als ich die Projkete [ps4-waker](https://github.com/dhleong/ps4-waker) und [python-ps4](https://github.com/hthiery/python-ps4) auf GitHUb gesehen habe.
+Vielen Dank auch an die beiden Entwickler, der mir viele E-Mails beantwortet hat.
+
+Ein großes Danke geht auch an Nall-Chan, aus dem IP-Symcon Forum, der mich bei der Verschlüsselung in PHP unterstützt hat.
+
+### Bildnachweise
+
+#### Playstation Logo
+<div>Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
+
+## 4. Spenden
 
 Dieses Modul ist für die nicht kommzerielle Nutzung kostenlos, freiweillige Unterstützungen für den Autor werden hier akzeptiert:  
 
 <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=EK4JRP87XLSHW" target="_blank"><img src="https://www.paypalobjects.com/de_DE/DE/i/btn/btn_donate_LG.gif" border="0" /></a>
 
-## Bildnachweise
+## 5. Lizenz
 
-### Playstation Logo
-<div>Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
+[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/) 
