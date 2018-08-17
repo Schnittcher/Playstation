@@ -13,7 +13,7 @@ Das Modul befindet sich noch in einer Beta Phase.
 2. [Installation](#2-installation)
 3. [Sonstiges](#3-sonstiges)
 4. [Spenden](#4-spenden)
-5. [Lizenz](5-lizenz)
+5. [Lizenz](#5-lizenz)
 
 ## 1. Funktionsumfang 
 * Wecken der PS4 aus dem Ruhemodus
