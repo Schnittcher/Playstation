@@ -69,7 +69,7 @@ class PS4 extends IPSModule
     public function Register(int $pincode)
     {
         $this->Connect();
-        IPS_Sleep(100);
+        IPS_Sleep(400);
         $this->_send_login_request($pincode);
         IPS_Sleep(500);
         $this->Close();
@@ -78,7 +78,7 @@ class PS4 extends IPSModule
     public function Login()
     {
         $this->Connect();
-        IPS_Sleep(100);
+        IPS_Sleep(400);
         $this->_send_login_request();
         IPS_Sleep(100);
         $this->Close();
@@ -87,7 +87,7 @@ class PS4 extends IPSModule
     public function Standby()
     {
         $this->Connect();
-        IPS_Sleep(100);
+        IPS_Sleep(400);
         $this->_send_login_request();
         IPS_Sleep(100);
         $this->_send_standby_request();
@@ -97,7 +97,7 @@ class PS4 extends IPSModule
     public function StartTitle(string $title_id)
     {
         $this->Connect();
-        IPS_Sleep(100);
+        IPS_Sleep(400);
         $this->_send_login_request();
         $this->_send_boot_request($title_id);
         $this->Close();
@@ -106,7 +106,7 @@ class PS4 extends IPSModule
     public function RemoteControl(string $remote_key, int $hold_time = 0)
     {
         $this->Connect();
-        IPS_Sleep(100);
+        IPS_Sleep(400);
         $this->_send_login_request();
         $this->_send_remote_control_request('open_rc', 0);
         IPS_Sleep(400);
