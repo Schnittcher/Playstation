@@ -150,7 +150,6 @@ trait TCPConnection
         $Login .= $pincode;
         $this->ReceiveEncrypted = true;
         $this->SendDebug('Login Package', $Login, 0);
-
         $this->_send_msg($Login, true);
     }
 
@@ -241,12 +240,15 @@ trait TCPConnection
             }
             $this->SendDebug('Send encypted:', $msg, 1);
         }
-
-        if ($bytes = socket_send($this->socket, $msg, strlen($msg), 0)) {
+        $JSON['DataID'] = '{79827379-F36E-4ADA-8A95-5F8D1DC92FA9}';
+        $JSON['Buffer'] = utf8_encode($msg);
+        $SendData = json_encode($JSON);
+        $this->SendDataToParent($SendData);
+/**        if ($bytes = socket_send($this->socket, $msg, strlen($msg), 0)) {
             $this->SendDebug(' socket', $bytes . ' bytes sent to ' . $this->ReadPropertyString('IP') . ':' . 997, 0);
         } else {
             $this->SocketErrorHandler();
-        }
+        } **/
     }
 
     /** Socket functions */
@@ -312,7 +314,6 @@ trait TCPConnection
                 $Packet = substr($Data, 4, $Len);
                 $Type = substr($Packet, 0, 4);
                 $Payload = substr($Packet, 4);
-
                 switch ($Type) {
                     case 'pcco':
                         $this->SendDebug('Hello Request Answer', $Payload, 1);
@@ -354,22 +355,31 @@ trait TCPConnection
 
             IPS_Sleep($this->ReadPropertyInteger('BootTime') * 1000);
         }
+        if (!$this->LoggedIn) {
         $this->sendLaunch();
-        IPS_Sleep(20);
-        $this->CreateSocket();
-        $this->SocketSetTimeout();
-        socket_connect($this->socket, $this->ReadPropertyString('IP'), 997);
+        IPS_Sleep(500);
+        //$this->CreateSocket();
+        //$this->SocketSetTimeout();
+        $data=IPS_GetInstance($this->InstanceID);
+        $this->SendDebug("ID",$data['ConnectionID'],0);
+        IPS_SetProperty($data['ConnectionID'], "Open", true); //I/O Instanz soll aktiviert sein.
+        IPS_ApplyChanges($data['ConnectionID']); //Neue Konfiguration übernehmen
+        //socket_connect($this->socket, $this->ReadPropertyString('IP'), 997);
 
         $this->ReceiveEncrypted = false;
         $this->_send_hello_request();
         //Receive Answer to get the first Seed
-        $this->_receive_msg();
+        //$this->_receive_msg();
         if (!$this->WaitForSeed()) {
             $this->SetStatus(204);
             return false;
         }
         $this->SetStatus(102);
         $this->_send_handshake_request();
+        $this->LoggedIn = true;
+        } else {
+            $this->SendDebug(__FUNCTION__, "Schon eingeloggt",0);
+        }
     }
 
     /**
