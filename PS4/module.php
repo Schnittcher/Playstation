@@ -42,8 +42,7 @@ class PS4 extends IPSModule
         $this->RegisterControls();
         $this->RegisterVariableInteger('PS4_Controls', 'Controls', 'PS4.Controls', 6);
         //Client Socket
-        $this->RequireParent("{3CFF0FD9-E306-41DB-9B5A-9D06D38576C3}");
-
+        $this->RequireParent('{3CFF0FD9-E306-41DB-9B5A-9D06D38576C3}');
     }
 
     public function ApplyChanges()
@@ -54,9 +53,9 @@ class PS4 extends IPSModule
         $this->ReceiveEncrypted = false;
         $this->LoggedIn = false;
 
-        $data=IPS_GetInstance($this->InstanceID);
-        $this->SendDebug("ID",$data['ConnectionID'],0);
-        $this->RegisterMessage($data['ConnectionID'],10505);
+        $data = IPS_GetInstance($this->InstanceID);
+        $this->SendDebug('ID', $data['ConnectionID'], 0);
+        $this->RegisterMessage($data['ConnectionID'], 10505);
 
         if (!IPS_VariableProfileExists('PS4.Games')) {
             $this->RegisterProfileIntegerEx('PS4.Games', 'Database', '', '', array());
@@ -69,8 +68,9 @@ class PS4 extends IPSModule
         $this->SetTimerInterval('PS4_UpdateActuallyStatus', $this->ReadPropertyInteger('UpdateTimerInterval') * 1000);
     }
 
-    public function MessageSink($TimeStamp, $SenderID, $Message, $Data) {
-        $this->SendDebug(__FUNCTION__, "TS: $TimeStamp SenderID ".$SenderID." with MessageID ".$Message." Data: ".print_r($Data, true),0);
+    public function MessageSink($TimeStamp, $SenderID, $Message, $Data)
+    {
+        $this->SendDebug(__FUNCTION__, "TS: $TimeStamp SenderID " . $SenderID . ' with MessageID ' . $Message . ' Data: ' . print_r($Data, true), 0);
         switch ($Message) {
             case IM_CHANGESTATUS:
                 switch ($Data[0]) {
@@ -79,7 +79,7 @@ class PS4 extends IPSModule
                         $this->Seed = '';
                         $this->ReceiveEncrypted = false;
                         $this->LoggedIn = false;
-                        IPS_SetProperty($SenderID, "Open", false); //I/O Instanz soll aktiviert sein.
+                        IPS_SetProperty($SenderID, 'Open', false); //I/O Instanz soll aktiviert sein.
                         IPS_ApplyChanges($SenderID); //Neue Konfiguration übernehmen
                 }
         }
@@ -90,12 +90,12 @@ class PS4 extends IPSModule
         $ReceiveData = json_decode($JSONString);
         $DataIn = utf8_decode($ReceiveData->Buffer);
         if ($this->ReceiveEncrypted) { // Hier empfangende Daten entschlüsseln
-            $this->SendDebug("Received Encrypted Data", $DataIn, 1); // 1 für default ist Hex-Ansicht
+            $this->SendDebug('Received Encrypted Data', $DataIn, 1); // 1 für default ist Hex-Ansicht
             $random_seed = "\x10\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
-            $Data = openssl_decrypt($DataIn, "AES-128-CBC", $random_seed, OPENSSL_RAW_DATA , $this->Seed); //Decrypt benutzt unser Passwort (random_seed) und als start IV den empfangenen Seed des PS4
-            $this->SendDebug("Received Decrypted Data", $Data, 0); // 1 für default ist Hex-Ansicht
+            $Data = openssl_decrypt($DataIn, 'AES-128-CBC', $random_seed, OPENSSL_RAW_DATA, $this->Seed); //Decrypt benutzt unser Passwort (random_seed) und als start IV den empfangenen Seed des PS4
+            $this->SendDebug('Received Decrypted Data', $Data, 0); // 1 für default ist Hex-Ansicht
         } else { // Unverschlüsselte Daten.
-            $this->SendDebug("Received Plain Data", $DataIn, 1); // 1 für default ist Hex-Ansicht
+            $this->SendDebug('Received Plain Data', $DataIn, 1); // 1 für default ist Hex-Ansicht
             $Data = $this->Buffer . $DataIn;
             $Len = unpack('V', substr($Data, 0, 4))[1];
             //$Data lang genug ?
@@ -109,14 +109,14 @@ class PS4 extends IPSModule
             $Type = substr($Packet, 0, 4);
             $Payload = substr($Packet, 4);
             switch ($Type) {
-                case "pcco":
-                    $this->SendDebug("Hello Request Answer", $Payload, 1);
+                case 'pcco':
+                    $this->SendDebug('Hello Request Answer', $Payload, 1);
                     $this->Seed = substr($Payload, 12, 16);
-                    $this->SendDebug("Seed received", substr($Payload, 12, 16), 1);
+                    $this->SendDebug('Seed received', substr($Payload, 12, 16), 1);
                     break;
                 default:
-                    $this->SendDebug("unhandled type received", $Type, 0);
-                    $this->SendDebug("unhandled payload received", $Payload, 0);
+                    $this->SendDebug('unhandled type received', $Type, 0);
+                    $this->SendDebug('unhandled payload received', $Payload, 0);
                     break;
             }
         }
@@ -339,9 +339,10 @@ class PS4 extends IPSModule
                 }
         }
     }
+
     public function GetConfigurationForParent()
     {
-        $JsonArray = array( "Host" => $this->ReadPropertyString('IP'), "Port" => 997, "Open" => false);
+        $JsonArray = array('Host' => $this->ReadPropertyString('IP'), 'Port' => 997, 'Open' => false);
         $Json = json_encode($JsonArray);
         return $Json;
     }
