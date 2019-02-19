@@ -504,7 +504,7 @@ trait DDPConnection
      */
     private function sendDDP($packet)
     {
-        $this->SendDebug(__FUNCTION__, $packet,0);
+        $this->SendDebug(__FUNCTION__, $packet, 0);
         $socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
         socket_set_option($socket, SOL_SOCKET, SO_BROADCAST, 1);
         socket_sendto($socket, $packet, strlen($packet), 0, $this->ReadPropertyString('IP'), 987);
