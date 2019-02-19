@@ -134,6 +134,7 @@ class PS4 extends IPSModule
         $this->Seed = '';
         $this->ReceiveEncrypted = false;
         $this->LoggedIn = false;
+        IPS_Sleep(100);
         $this->Connect();
         IPS_Sleep(600);
         $this->_send_login_request($pincode);
