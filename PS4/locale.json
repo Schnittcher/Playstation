@@ -1,7 +1,6 @@
 {
 	"translations": {
 		"de": {
-			"You have to configure the locale ip adress in the IO instance.": "Sie müssen die lokale IP-Adresse im IO konfigurieren.",
 			"IP adress from the PS4 system": "IP Adresse des PS4-Systems",
 			"IP adress": "IP-Adresse",
 			"Boottime in seconds": "Ladezeit in Sekunden",
