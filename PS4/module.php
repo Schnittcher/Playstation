@@ -342,7 +342,7 @@ class PS4 extends IPSModule
 
     public function GetConfigurationForParent()
     {
-        $JsonArray = array('Host' => $this->ReadPropertyString('IP'), 'Port' => 997, 'Open' => IPS_GetProperty(IPS_GetParent($this->InstanceID),'Open'));
+        $JsonArray = array('Host' => $this->ReadPropertyString('IP'), 'Port' => 997, 'Open' => IPS_GetProperty(IPS_GetParent($this->InstanceID), 'Open'));
         $Json = json_encode($JsonArray);
         return $Json;
     }
