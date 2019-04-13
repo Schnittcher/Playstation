@@ -84,7 +84,7 @@ trait TCPConnection
     /**
      * Build and send the hello packet.
      */
-    private function _send_hello_request()
+    protected function _send_hello_request()
     {
         $packet = "\x1c\x00\x00\x00\x70\x63\x63\x6f\x00\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
         $this->_send_msg($packet);
@@ -93,7 +93,7 @@ trait TCPConnection
     /**
      * Build and send the handshake packet.
      */
-    private function _send_handshake_request()
+    protected function _send_handshake_request()
     {
         $this->SendDebug('Used Seed', $this->Seed, 0);
 
@@ -111,7 +111,7 @@ trait TCPConnection
     /**
      * Build and send standby kacket.
      */
-    private function _send_standby_request()
+    protected function _send_standby_request()
     {
         $Packet = "\x08\x00\x00\x00";
         $Packet .= "\x1a\x00\x00\x00";
@@ -127,7 +127,7 @@ trait TCPConnection
      *
      * @param string $pincode
      */
-    private function _send_login_request($pincode = '')
+    protected function _send_login_request($pincode = '')
     {
         $AccountID = $this->ReadPropertyString('Credentials');
         $AccountID = str_pad($AccountID, 64, "\x00");
@@ -158,7 +158,7 @@ trait TCPConnection
      *
      * @param $title_id
      */
-    private function _send_boot_request($title_id)
+    protected function _send_boot_request($title_id)
     {
         $Package = "\x18\x00\x00\x00";
         $Package .= "\x0a\x00\x00\x00";
@@ -170,7 +170,7 @@ trait TCPConnection
         $this->_send_msg($Package, true);
     }
 
-    private function _send_remote_control_request($remote_key, $hold_time = 0)
+    protected function _send_remote_control_request($remote_key, $hold_time = 0)
     {
         $Package = "\x10\x00\x00\x00";
         $Package .= "\x1c\x00\x00\x00";
@@ -226,7 +226,7 @@ trait TCPConnection
      * @param $msg
      * @param bool $encrypted
      */
-    private function _send_msg($msg, $encrypted = false)
+    protected function _send_msg($msg, $encrypted = false)
     {
         $this->SendDebug('Send Data:', $msg, 1);
         $this->SendDebug('Used Seed to entcrypt:', $this->Seed, 1);
@@ -256,7 +256,7 @@ trait TCPConnection
     /**
      * Create socket for tcp connection.
      */
-    private function CreateSocket()
+    protected function CreateSocket()
     {
 
         /* do nothing, if socket was already created */
@@ -289,7 +289,7 @@ trait TCPConnection
     /**
      * received message via tcp, used to get the first seed.
      */
-    private function _receive_msg()
+    protected function _receive_msg()
     {
         $buffer = '';
         if ($bytes = @socket_recv($this->socket, $buffer, 4096, 0) !== false) {
@@ -345,7 +345,7 @@ trait TCPConnection
      *
      * @return bool
      */
-    private function Connect()
+    protected function Connect()
     {
         $Status = $this->getStatus();
 
@@ -385,7 +385,7 @@ trait TCPConnection
     /**
      * Close connection to Playstation 4.
      */
-    private function Close()
+    protected function Close()
     {
         $this->Seed = '';
         IPS_Sleep(200);
@@ -398,7 +398,7 @@ trait TCPConnection
      *
      * @return string
      */
-    private function get_Public_Key_RSA()
+    protected function get_Public_Key_RSA()
     {
         $pk = <<<'EOF'
 -----BEGIN PUBLIC KEY-----
@@ -419,7 +419,7 @@ EOF;
      *
      * @return bool
      */
-    private function WaitForSeed()
+    protected function WaitForSeed()
     {
         for ($i = 0; $i < 1000; $i++) {
             $ret = $this->Seed;
@@ -440,7 +440,7 @@ EOF;
 trait DDPConnection
 {
     /** DDP Connection */
-    private function getStatus()
+    protected function getStatus()
     {
         $packet = 'SRCH * HTTP/1.1\n';
         $packet .= 'device-discovery-protocol-version:00020020\n';
@@ -472,7 +472,7 @@ trait DDPConnection
     /**
      *Generate and Send WakeUP Packet (DDP over UDP).
      */
-    private function sendWakeUP()
+    protected function sendWakeUP()
     {
         $packet = "WAKEUP * HTTP/1.1\n";
         $packet .= "client-type:i\n";
@@ -488,7 +488,7 @@ trait DDPConnection
      *Generate and send Launch Packet (DDP over UDP)
      *Launch Packet activate TCP Connection on the PS4-System.
      */
-    private function sendLaunch()
+    protected function sendLaunch()
     {
         $packet = "LAUNCH * HTTP/1.1\n";
         $packet .= "client-type:i\n";
@@ -502,7 +502,7 @@ trait DDPConnection
      * @param $packet
      * Send DDP Packet over UDP
      */
-    private function sendDDP($packet)
+    protected function sendDDP($packet)
     {
         $this->SendDebug(__FUNCTION__, $packet, 0);
         $socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
@@ -510,7 +510,7 @@ trait DDPConnection
         socket_sendto($socket, $packet, strlen($packet), 0, $this->ReadPropertyString('IP'), 987);
     }
 
-    private function ParseHeader($Lines)
+    protected function ParseHeader($Lines)
     {
         $Header = array();
         foreach ($Lines as $Line) {
