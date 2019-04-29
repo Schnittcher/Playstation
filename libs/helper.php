@@ -352,7 +352,7 @@ trait TCPConnection
         if (!$Status['Power']) {
             $caller = debug_backtrace()[1]['function'];
             if ($caller == 'Standby') {
-                $this->SendDebug(__FUNCTION__. 'Standby', $caller,0);
+                $this->SendDebug(__FUNCTION__ . 'Standby', $caller, 0);
                 return false;
             }
             $this->sendWakeup();
