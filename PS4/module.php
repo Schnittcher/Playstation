@@ -149,7 +149,7 @@ class PS4 extends IPSModule
     public function Standby()
     {
         if ($this->Connect()) {
-            $this->SendDebug(__FUNCTION__. 'Standby ???', '???',0);
+            $this->SendDebug(__FUNCTION__ . 'Standby ???', '???', 0);
             IPS_Sleep(400);
             $this->_send_login_request();
             IPS_Sleep(100);
