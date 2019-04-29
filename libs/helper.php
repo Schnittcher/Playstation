@@ -348,9 +348,13 @@ trait TCPConnection
     protected function Connect()
     {
         $Status = $this->getStatus();
-
         //Send WakeUP Packet only when the PS4-System is in StandBy
         if (!$Status['Power']) {
+            $caller = debug_backtrace()[1]['function'];
+            if ($caller == 'Standby') {
+                $this->SendDebug(__FUNCTION__. 'Standby', $caller,0);
+                return false;
+            }
             $this->sendWakeup();
 
             IPS_Sleep($this->ReadPropertyInteger('BootTime') * 1000);
