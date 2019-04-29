@@ -449,10 +449,11 @@ trait DDPConnection
         socket_set_option($socket, SOL_SOCKET, SO_RCVTIMEO, array('sec' => 2, 'usec' => 0));
         socket_set_option($socket, SOL_SOCKET, SO_BROADCAST, 1);
         socket_sendto($socket, $packet, strlen($packet), 0, '255.255.255.255', 987);
-        if (socket_recvfrom($socket, $result, 1024, 0, $ipaddress, $port) == false) {
-            $errorcode = socket_last_error();
-            $errormsg = socket_strerror($errorcode);
-            $this->SendDebug(__FUNCTION__ . 'DDP Socket', $errorcode . ': ' . $errormsg, 0);
+        try {
+            socket_recvfrom($socket, $result, 1024, 0, $ipaddress, $port);
+        } catch (Exception $e) {
+            $this->SendDebug(__FUNCTION__ . 'DDP Socket', $e->getMessage(), 0);
+            echo 'Exception abgefangen: ',  $e->getMessage(), "\n";
         }
 
         $Lines = explode("\n", utf8_decode($result));
