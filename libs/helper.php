@@ -351,20 +351,10 @@ trait TCPConnection
         //Send WakeUP Packet only when the PS4-System is in StandBy
         if (!$Status['Power']) {
             $caller = debug_backtrace()[1]['function'];
-            if ($caller == 'Standby') {
-                $this->SendDebug(__FUNCTION__ . 'Standby', $caller, 0);
-                if (!$this->LoggedIn) {
-                    $this->sendLaunch();
-                    IPS_Sleep(500);
-                    //$this->CreateSocket();
-                    //$this->SocketSetTimeout();
-                    $data = IPS_GetInstance($this->InstanceID);
-                    $this->SendDebug('ID', $data['ConnectionID'], 0);
-                    IPS_SetProperty($data['ConnectionID'], 'Open', true); //I/O Instanz soll aktiviert sein.
-                IPS_ApplyChanges($data['ConnectionID']); //Neue Konfiguration übernehmen
+            if ($caller != 'Standby') {
+                $this->SendDebug(__FUNCTION__ . ' Nicht Standby', $caller, 0);
+                $this->sendWakeup();
             }
-            $this->sendWakeup();
-
             IPS_Sleep($this->ReadPropertyInteger('BootTime') * 1000);
         }
         if (!$this->LoggedIn) {
