@@ -353,7 +353,15 @@ trait TCPConnection
             $caller = debug_backtrace()[1]['function'];
             if ($caller == 'Standby') {
                 $this->SendDebug(__FUNCTION__ . 'Standby', $caller, 0);
-                return false;
+                if (!$this->LoggedIn) {
+                    $this->sendLaunch();
+                    IPS_Sleep(500);
+                    //$this->CreateSocket();
+                    //$this->SocketSetTimeout();
+                    $data = IPS_GetInstance($this->InstanceID);
+                    $this->SendDebug('ID', $data['ConnectionID'], 0);
+                    IPS_SetProperty($data['ConnectionID'], 'Open', true); //I/O Instanz soll aktiviert sein.
+                IPS_ApplyChanges($data['ConnectionID']); //Neue Konfiguration übernehmen
             }
             $this->sendWakeup();
 
