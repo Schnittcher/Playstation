@@ -89,10 +89,9 @@ class PS4_Dummy extends IPSModule
                 $this->SendSearchResponse($ReceiveData->ClientIP, $ReceiveData->ClientPort);
                 break;
             case 'WAKEUP * HTTP/1.1':
-                if (array_key_exists(1, $Lines)) {
-                    $credentials = explode(':', $Lines[1]);
-                    $this->SendDebug('Credentials', $credentials[1], 0);
-                    SetValue(IPS_GetObjectIDByIdent('PS4_Credentials', $this->InstanceID), $credentials[1]);
+                if (array_key_exists('USER-CREDENTIAL', $Header)) {
+                    $this->SendDebug('Credentials', $Header['USER-CREDENTIAL'], 0);
+                    SetValue(IPS_GetObjectIDByIdent('PS4_Credentials', $this->InstanceID), $Header['USER-CREDENTIAL']);
                 }
                 break;
             default:
