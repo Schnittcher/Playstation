@@ -1,7 +1,7 @@
 [![Version](https://img.shields.io/badge/Symcon-PHPModul-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
 ![Version](https://img.shields.io/badge/Symcon%20Version-5.0%20%3E-blue.svg)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
-[![StyleCI](https://styleci.io/repos/120787671/shield?style=flat)](https://styleci.io/repos/120787671)
+[![Check Style](https://github.com/Schnittcher/IPS-PS4/workflows/Check%20Style/badge.svg)](https://github.com/Schnittcher/IPS-PS4/actions)
 
 # IPS-PS4
 Mit diesem Modul ist es möglich, ein PS4-System über IP-Symcon zu steuern.
