@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 trait BufferHelper
 {
     /**
@@ -248,7 +250,7 @@ trait TCPConnection
                     $this->SendDebug(' socket', $bytes . ' bytes sent to ' . $this->ReadPropertyString('IP') . ':' . 997, 0);
                 } else {
                     $this->SocketErrorHandler();
-                } **/
+                } */
     }
 
     /** Socket functions */
@@ -279,7 +281,7 @@ trait TCPConnection
      */
     protected function SocketSetTimeout($timeout = 2)
     {
-        if (socket_set_option($this->socket, SOL_SOCKET, SO_RCVTIMEO, array('sec' => $timeout, 'usec' => 0))) {
+        if (socket_set_option($this->socket, SOL_SOCKET, SO_RCVTIMEO, ['sec' => $timeout, 'usec' => 0])) {
             $this->SendDebug('socket [settings]', 'set timeout to ' . $timeout . 's', 0);
         } else {
             $this->SocketErrorHandler();
@@ -448,7 +450,7 @@ trait DDPConnection
         $packet .= 'device-discovery-protocol-version:00020020\n';
 
         $socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
-        socket_set_option($socket, SOL_SOCKET, SO_RCVTIMEO, array('sec' => 2, 'usec' => 0));
+        socket_set_option($socket, SOL_SOCKET, SO_RCVTIMEO, ['sec' => 2, 'usec' => 0]);
         socket_set_option($socket, SOL_SOCKET, SO_BROADCAST, 1);
         socket_sendto($socket, $packet, strlen($packet), 0, '255.255.255.255', 987);
         socket_recvfrom($socket, $result, 1024, 0, $ipaddress, $port);
@@ -514,7 +516,7 @@ trait DDPConnection
 
     protected function ParseHeader($Lines)
     {
-        $Header = array();
+        $Header = [];
         foreach ($Lines as $Line) {
             $pair = explode(':', $Line);
             $Key = array_shift($pair);

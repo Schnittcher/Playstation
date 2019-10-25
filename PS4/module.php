@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 include_once __DIR__ . '/../libs/helper.php';
 include_once __DIR__ . '/../libs/PSStore.php';
 
@@ -11,10 +13,14 @@ include_once __DIR__ . '/../libs/PSStore.php';
  */
 class PS4 extends IPSModule
 {
-    use BufferHelper,
-        DebugHelper,
-        TCPConnection,
-        DDPConnection,
+    use BufferHelper;
+    use
+        DebugHelper;
+    use
+        TCPConnection;
+    use
+        DDPConnection;
+    use
         VariableProfile;
 
     public function Create()
@@ -58,7 +64,7 @@ class PS4 extends IPSModule
         $this->RegisterMessage($data['ConnectionID'], 10505);
 
         if (!IPS_VariableProfileExists('PS4.Games')) {
-            $this->RegisterProfileIntegerEx('PS4.Games', 'Database', '', '', array());
+            $this->RegisterProfileIntegerEx('PS4.Games', 'Database', '', '', []);
         }
         $this->RegisterVariableInteger('PS4_Game', 'Games', 'PS4.Games', 5);
         $this->EnableAction('PS4_Game');
@@ -225,62 +231,6 @@ class PS4 extends IPSModule
         }
     }
 
-    /** internal private Functions */
-    private function GetCover($URL = null)
-    {
-        if ($URL != null) {
-            $Content = file_get_contents($URL);
-        } else {
-            $Content = file_get_contents(__DIR__ . '/../imgs/default_cover.png');
-        }
-
-        IPS_SetMediaContent($this->GetIDForIdent('PS4_MediaCover'), base64_encode($Content));  //Bild Base64 codieren und ablegen
-        IPS_SendMediaEvent($this->GetIDForIdent('PS4_MediaCover')); //aktualisieren
-        return;
-    }
-
-    private function UpdateGamelist()
-    {
-        $GamesListString = $this->ReadPropertyString('Games');
-        if ($GamesListString != '') {
-            if (IPS_VariableProfileExists('PS4.Games')) {
-                IPS_DeleteVariableProfile('PS4.Games');
-            }
-
-            $Associations = array();
-            $Value = 1;
-
-            $Games = json_decode($GamesListString);
-            foreach ($Games as $Game) {
-                $Associations[] = array($Value++, $Game->GameName, '', -1);
-                // associations only support up to 32 variables
-                if ($Value === 33) {
-                    break;
-                }
-            }
-            $this->RegisterProfileIntegerEx('PS4.Games', 'Database', '', '', $Associations);
-        }
-    }
-
-    private function RegisterControls()
-    {
-        if (IPS_VariableProfileExists('PS4.Controls')) {
-            IPS_DeleteVariableProfile('PS4.Controls');
-        }
-
-        $Associations = array();
-        $Associations[] = array(1, 'UP', '', -1);
-        $Associations[] = array(2, 'DOWN', '', -1);
-        $Associations[] = array(3, 'RIGHT', '', -1);
-        $Associations[] = array(4, 'LEFT', '', -1);
-        $Associations[] = array(5, 'ENTER', '', -1);
-        $Associations[] = array(6, 'BACK', '', -1);
-        $Associations[] = array(7, 'OPTION', '', -1);
-        $Associations[] = array(8, 'PS', '', -1);
-        $Associations[] = array(9, 'LOGIN', '', -1);
-        $this->RegisterProfileIntegerEx('PS4.Controls', 'Move', '', '', $Associations);
-    }
-
     /** IPS Functions */
     public function RequestAction($Ident, $Value)
     {
@@ -344,8 +294,64 @@ class PS4 extends IPSModule
 
     public function GetConfigurationForParent()
     {
-        $JsonArray = array('Host' => $this->ReadPropertyString('IP'), 'Port' => 997, 'Open' => IPS_GetProperty(IPS_GetInstance($this->InstanceID)['ConnectionID'], 'Open'));
+        $JsonArray = ['Host' => $this->ReadPropertyString('IP'), 'Port' => 997, 'Open' => IPS_GetProperty(IPS_GetInstance($this->InstanceID)['ConnectionID'], 'Open')];
         $Json = json_encode($JsonArray);
         return $Json;
+    }
+
+    /** internal private Functions */
+    private function GetCover($URL = null)
+    {
+        if ($URL != null) {
+            $Content = file_get_contents($URL);
+        } else {
+            $Content = file_get_contents(__DIR__ . '/../imgs/default_cover.png');
+        }
+
+        IPS_SetMediaContent($this->GetIDForIdent('PS4_MediaCover'), base64_encode($Content));  //Bild Base64 codieren und ablegen
+        IPS_SendMediaEvent($this->GetIDForIdent('PS4_MediaCover')); //aktualisieren
+        return;
+    }
+
+    private function UpdateGamelist()
+    {
+        $GamesListString = $this->ReadPropertyString('Games');
+        if ($GamesListString != '') {
+            if (IPS_VariableProfileExists('PS4.Games')) {
+                IPS_DeleteVariableProfile('PS4.Games');
+            }
+
+            $Associations = [];
+            $Value = 1;
+
+            $Games = json_decode($GamesListString);
+            foreach ($Games as $Game) {
+                $Associations[] = [$Value++, $Game->GameName, '', -1];
+                // associations only support up to 32 variables
+                if ($Value === 33) {
+                    break;
+                }
+            }
+            $this->RegisterProfileIntegerEx('PS4.Games', 'Database', '', '', $Associations);
+        }
+    }
+
+    private function RegisterControls()
+    {
+        if (IPS_VariableProfileExists('PS4.Controls')) {
+            IPS_DeleteVariableProfile('PS4.Controls');
+        }
+
+        $Associations = [];
+        $Associations[] = [1, 'UP', '', -1];
+        $Associations[] = [2, 'DOWN', '', -1];
+        $Associations[] = [3, 'RIGHT', '', -1];
+        $Associations[] = [4, 'LEFT', '', -1];
+        $Associations[] = [5, 'ENTER', '', -1];
+        $Associations[] = [6, 'BACK', '', -1];
+        $Associations[] = [7, 'OPTION', '', -1];
+        $Associations[] = [8, 'PS', '', -1];
+        $Associations[] = [9, 'LOGIN', '', -1];
+        $this->RegisterProfileIntegerEx('PS4.Controls', 'Move', '', '', $Associations);
     }
 }

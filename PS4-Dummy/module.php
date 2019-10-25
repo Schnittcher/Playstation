@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 include_once __DIR__ . '/../libs/helper.php';
 
 class PS4_Dummy extends IPSModule
 {
-    use BufferHelper,
+    use BufferHelper;
+    use
         DebugHelper;
 
     public function Create()
@@ -45,20 +48,9 @@ class PS4_Dummy extends IPSModule
         $Header[] = 'device-discovery-protocol-version:00020020';
         $Payload = implode("\n", $Header);
         $this->SendDebug('SendSearchResponse', $Payload, 0);
-        $SendData = array('DataID' => '{C8792760-65CF-4C53-B5C7-A30FCC84FEFE}', 'Buffer' => utf8_encode($Payload), 'ClientIP' => $Host, 'ClientPort' => $Port);
+        $SendData = ['DataID' => '{C8792760-65CF-4C53-B5C7-A30FCC84FEFE}', 'Buffer' => utf8_encode($Payload), 'ClientIP' => $Host, 'ClientPort' => $Port];
         //$this->SendDebug("SendToParent", $SendData, 0);
         $this->SendDataToParent(json_encode($SendData));
-    }
-
-    private function ParseHeader($Lines)
-    {
-        $Header = array();
-        foreach ($Lines as $Line) {
-            $pair = explode(':', $Line);
-            $Key = array_shift($pair);
-            $Header[strtoupper($Key)] = trim(implode(':', $pair));
-        }
-        return $Header;
     }
 
     public function ReceiveData($JSONString)
@@ -112,5 +104,16 @@ class PS4_Dummy extends IPSModule
         $jsonarr['Port'] = 987;
         $json = json_encode($jsonarr);
         return $json;
+    }
+
+    private function ParseHeader($Lines)
+    {
+        $Header = [];
+        foreach ($Lines as $Line) {
+            $pair = explode(':', $Line);
+            $Key = array_shift($pair);
+            $Header[strtoupper($Key)] = trim(implode(':', $pair));
+        }
+        return $Header;
     }
 }
