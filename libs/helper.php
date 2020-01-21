@@ -139,7 +139,7 @@ trait TCPConnection
         $OSVersion = str_pad($OSVersion, 16, "\x00");
         $model = 'IP-Symcon';
         $model = str_pad($model, 16, "\x00");
-        $pincode = str_pad($pincode, 16, "\x00");
+        $pincode = str_pad(strval($pincode), 16, "\x00");
 
         $Login = "\x80\x01\x00\x00";
         $Login .= "\x1e\x00\x00\x00";
