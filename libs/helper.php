@@ -455,6 +455,11 @@ trait DDPConnection
         socket_sendto($socket, $packet, strlen($packet), 0, '255.255.255.255', 987);
         socket_recvfrom($socket, $result, 1024, 0, $ipaddress, $port);
 
+        if ($result == null) {
+            $Header['Power'] = false;
+            return $Header;
+        }
+
         $Lines = explode("\n", utf8_decode($result));
 
         $Request = array_shift($Lines);
