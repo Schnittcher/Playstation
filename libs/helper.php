@@ -383,6 +383,7 @@ trait TCPConnection
             $this->LoggedIn = true;
         } else {
             $this->SendDebug(__FUNCTION__, 'Schon eingeloggt', 0);
+            return true;
         }
     }
 
