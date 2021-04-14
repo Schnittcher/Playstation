@@ -1,0 +1,12 @@
+{
+    "elements":
+            [
+                {
+                    "type": "Label",
+                    "label": "IP Adresse des PS5-Systems"
+                },
+                { "type": "ValidationTextBox", "name": "IP", "caption": "IP adress" },
+                { "type": "ValidationTextBox", "name": "Credentials", "caption": "User-Credentials" },
+                { "type": "IntervalBox", "name": "UpdateTimerInterval", "caption": "seconds" }
+            ]
+}
