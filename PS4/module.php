@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 include_once __DIR__ . '/../libs/helper.php';
-include_once __DIR__ . '/../libs/PS4helper.php';
+include_once __DIR__ . '/../libs/PS4Helper.php';
 include_once __DIR__ . '/../libs/PSStore.php';
 
 /**

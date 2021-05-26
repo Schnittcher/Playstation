@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 include_once __DIR__ . '/../libs/helper.php';
-include_once __DIR__ . '/../libs/PS5helper.php';
+include_once __DIR__ . '/../libs/PS5Helper.php';
 
 class PS5 extends IPSModule
 {
