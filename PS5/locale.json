@@ -1,10 +1,10 @@
 {
-	"translations": {
-		"de": {
-			"IP adress from the PS5 system": "IP Adresse des PS5-Systems",
-			"IP adress": "IP-Adresse",
-			"seconds": "Sekunden",
-			"State": "Status"
-		}
-	}
+    "translations": {
+        "de": {
+            "IP adress from the PS5 system": "IP Adresse des PS5-Systems",
+            "IP adress": "IP-Adresse",
+            "seconds": "Sekunden",
+            "State": "Status"
+        }
+    }
 }

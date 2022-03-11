@@ -1,13 +1,13 @@
 {
-	"translations": {
-		"de": {
-			"This instance is needed for the registration from the PS4, in can be deleted if credentials are available.": "Diese Instanz muss nur für die Registrierung der PS4 aktiv sein, danach kann sie deaktiviert oder gelöscht werden.",
-			"activate dummy": "Dummy aktivieren",
-			"Creating instance.": "Die Instanz wird erstellt.",
-			"PS4 Dummy active.": "PS4 Dummy aktiv.",
-			"interface closed.": "Interface geschlossen.",
-			"Host is empty.": "IP Adresse darf nicht leer sein.",
-			"Gateway timed out.": "Gateway Zeitüberschreitung."
-		}
-	}
+    "translations": {
+        "de": {
+            "This instance is needed for the registration from the PS4, in can be deleted if credentials are available.": "Diese Instanz muss nur für die Registrierung der PS4 aktiv sein, danach kann sie deaktiviert oder gelöscht werden.",
+            "activate dummy": "Dummy aktivieren",
+            "Creating instance.": "Die Instanz wird erstellt.",
+            "PS4 Dummy active.": "PS4 Dummy aktiv.",
+            "interface closed.": "Interface geschlossen.",
+            "Host is empty.": "IP Adresse darf nicht leer sein.",
+            "Gateway timed out.": "Gateway Zeitüberschreitung."
+        }
+    }
 }

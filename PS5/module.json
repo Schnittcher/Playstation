@@ -3,7 +3,9 @@
     "name": "PS5",
     "type": 3,
     "vendor": "Sony",
-    "aliases": ["Playstation 5"],
+    "aliases": [
+        "Playstation 5"
+    ],
     "parentRequirements": [],
     "childRequirements": [],
     "implemented": [],
