@@ -8,6 +8,7 @@ include_once __DIR__ . '/../libs/PS5Helper.php';
 class PS5 extends IPSModule
 {
     use DebugHelper;
+    use DDPConnection;
     public function Create()
     {
         // Diese Zeile nicht löschen.
